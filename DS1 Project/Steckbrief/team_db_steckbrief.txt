@@ -1,0 +1,18 @@
+Steckbrief - Team DB 
+Inhalt:
+Robin, Hammer, 7224832, Robin.Hammer@deutschebahn.com
+Niklas Wagner, 7283479, Niklas.Wagner@deutschebahn.com
+Lukas Gerspers, 6984850, Lukas.Gerspers@deutschebahn.com
+ 
+Goal (max. 100 words):
+Das Ziel unserer Analyse soll sein, die Ausbreitungsgeschwindigkeit, Sterbe- und Genesungsrate von Covid-19 Infizierungen in unterschiedlichen Ländern, anhand von unterschiedlichen Kennzahlen der Länder (Happynessindex, Größe, Bevölkerungsdichte, …) zu erklären.
+Datasources (2-3 URLs):
+https://apify.com/covid-19
+https://www.kaggle.com/unsdsn/world-happiness
+https://documenter.getpostman.com/view/8854915/SzS7R6uu?version=latest#34f61547-12f7-4c8b-8326-c3894d9ceea7
+https://www.laenderdaten.info/lebensqualitaet.php
+
+Chapter 2: Online Data
+
+
+
