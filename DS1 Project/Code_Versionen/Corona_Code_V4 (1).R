@@ -583,44 +583,74 @@ fviz_cluster(dbscan, data = cluster_20000)
 
 
 
-#----------------<Clustering hclust>-------------------------------------------------------------#
+#----------------<Hierarchical Clustering>-------------------------------------------------------------#
 
 cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000_h <- as.data.frame(cluster_20000_h)
 
+View(cluster_20000_h)
+
 row.names(cluster_20000_h) <- cluster_20000_h$location
 cluster_20000_h$location <- NULL
 
-
-#Schritt 3: Distanzmatrix
-
-dist_matrix <- dist(cluster_20000_h, method = "euclidean")
-dist_matrix
-
-#Schritt 4: Clusteranalyse
-
-cluster <- hclust(dist_matrix, method = "single")
-cluster
-
-#Schritt 5: Zuordnungs?bersicht 
-
-cluster$merge
-
-#Schritt 6: Dendrogramm
-
-plot(cluster, labels = cluster$labels)
+describe(cluster_20000_h)
 
 
-plot(points, main = 'Hierarchical clustering', col = as.factor(cluster$cluster)) 
+#Standardisieren
+cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:4]))
 
+#Distanzen bilden
 
-#Schritt 7: Elbow-Diagram
+dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:4], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
 
-plot(40:1, cluster$height, xlab = "Number of Clusters", ylab = "Within SSE", type = "o")
+#Clustern
+fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2")
+
+#Plotten
+plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
 
 
 
 
+
+# Qatar, Kuweit, Singapore außreißer - Rausnehmen
+
+cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
+cluster_20000_h <- as.data.frame(cluster_20000_h)
+
+View(cluster_20000_h)
+
+
+cluster_20000_h <- filter(cluster_20000_h, location != "Qatar")
+cluster_20000_h <- filter(cluster_20000_h, location != "Kiwait")
+cluster_20000_h <- filter(cluster_20000_h, location != "Singapore")
+
+row.names(cluster_20000_h) <- cluster_20000_h$location
+cluster_20000_h$location <- NULL
+
+describe(cluster_20000_h)
+
+
+#Standardisieren
+cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:4]))
+
+#Distanzen bilden
+
+dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:4], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
+
+#Clustern
+fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2") #Alternative Methoden: ward.D, single, complete, average, mcquitty ... 
+
+#Plotten
+plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
+
+cluster_20000_h$clust.1 <- cutree(fit1, k=3)
+     
+# Es bilden sich 4 Cluster -> 
+    
+     
+     
+     
 
 
 
