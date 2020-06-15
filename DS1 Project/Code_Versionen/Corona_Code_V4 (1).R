@@ -15,6 +15,9 @@ library(psych) # -> cluster analyse
 library(factoextra) # -> clustering algorithms & visualization
 library(dbscan)
 library(data.table)
+library(dplyr)
+library(utils)
+
 rm(list=ls())
 
 options(scipen = 5)
@@ -25,9 +28,9 @@ options(scipen = 5)
 
 #----------------<read corona data>-------------------------------------------------------------#
 #read csv-file corona time series  2020_05_29_CoronaData.csv
-CoronaData <- read.csv("/Users/niklaswagner/Desktop/Datenquellen/Corona_Zeitreihen/CoronaData.csv")
+CoronaData <- read.csv(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
 CoronaData <- as_tibble(CoronaData)
-view(CoronaData)
+View(CoronaData)
 
 #----------------</read corona data>------------------------------------------------------------#
 
@@ -35,29 +38,29 @@ view(CoronaData)
 
 #----------------<read additional data>---------------------------------------------------------#
 #read Health_expenditure_per_Capita.xls
-HealthExpenditure <- read_excel("/Users/niklaswagner/Desktop/Datenquellen/Gesundheitsausgaben pro Kopf/Health_expenditure_per_Capita.xls")
+HealthExpenditure <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Gesundheitsausgaben%20pro%20Kopf/Health_expenditure_per_Capita.csv"))
 HealthExpenditure <- as_tibble(HealthExpenditure)
-#View(HealthExpenditure)
+View(HealthExpenditure)
 
 #read HappynessIndex Index.xlsx
-HappynessIndex <- read_excel("/Users/niklaswagner/Desktop/Datenquellen/Happyness_Index/Index.xlsx")
+HappynessIndex <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Happyness_Index/happynessindex.csv"))
 HappynessIndex <- as_tibble(HappynessIndex)
-#View(HappynessIndex)
+View(HappynessIndex)
 
 #read life expectancy - API_SP.DYN.LE00.IN_DS2_en_excel_v2_1120941.xls
-LifeExpectancy <- read_excel("/Users/niklaswagner/Desktop/Datenquellen/Lebenserwartung pro Land/API_SP.DYN.LE00.IN_DS2_en_excel_v2_1120941.xls")
+LifeExpectancy <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Lebenserwartung%20pro%20Land/life_expectancy_2019.csv"))
 LifeExpectancy <- as_tibble(LifeExpectancy)
-#View(LifeExpectancy)
+View(LifeExpectancy)
 
 #read API_SH.MED.NUMW.xlsx
-Nurses_per_1000 <- read_excel("/Users/niklaswagner/Desktop/Datenquellen/Nurses per 1000/API_SH.MED.NUMW.xlsx")
+Nurses_per_1000 <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Nurses%20per%201000/nurses_per_1000.csv"))
 Nurses_per_1000 <- as_tibble(Nurses_per_1000)
-#View(Nurses_per_1000)
+View(Nurses_per_1000)
 
 #read physicians/1000 API_SH.MED.PHYS.xlsx
-Physicians_per_1000 <- read_excel("/Users/niklaswagner/Desktop/Datenquellen/Physicians per 1000/API_SH.MED.PHYS.xlsx")
+Physicians_per_1000 <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Physicians%20per%201000/physicians_per_1000.csv"))
 Physicians_per_1000 <- as_tibble(Physicians_per_1000)
-#View(Physicians_per_1000)
+View(Physicians_per_1000)
 #----------------</read additional data>--------------------------------------------------------#
 
 
