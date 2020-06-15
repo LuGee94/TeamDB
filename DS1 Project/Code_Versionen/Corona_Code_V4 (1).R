@@ -644,8 +644,7 @@ fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2") #Alternative Methoden: 
 #Plotten
 plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
 
-cluster_20000_h$clust.1 <- cutree(fit1, k=3)
-     
+
 # Es bilden sich 4 Cluster -> 
     
      
