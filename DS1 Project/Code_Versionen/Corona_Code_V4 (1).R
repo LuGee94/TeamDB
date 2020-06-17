@@ -585,7 +585,10 @@ fviz_cluster(dbscan, data = cluster_20000)
 
 #----------------<Hierarchical Clustering>-------------------------------------------------------------#
 
-cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
+current_coronadata_filter_20000 <- select(current_corona_with_clusters, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections')
+View(current_coronadata_filter_20000)
+
+cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000_h <- as.data.frame(cluster_20000_h)
 
 View(cluster_20000_h)
@@ -596,112 +599,43 @@ cluster_20000_h$location <- NULL
 describe(cluster_20000_h)
 
 
-#Standardisieren
-cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:4]))
+#Standardisieren Option 1:
+cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:6]))
 
 #Distanzen bilden
 
-dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:4], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
+dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:6], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
 
 #Clustern
 fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2")
 
 #Plotten
 plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
+rect.hclust(fit1, k=4)
+abline(h = 3, col = 'red')
+
+suppressPackageStartupMessages(library(dendextend))
+avg_dend_obj <- as.dendrogram(fit1)
+avg_col_dend <- color_branches(avg_dend_obj, h = 5, k=4, border = 4)
+plot(avg_col_dend)
 
 
 
 
 
-# Qatar, Kuweit, Singapore außreißer - Rausnehmen
+#Table with assignments to cluster 
+gsa3 <- cutree(fit1, k = 4)
+abline(h = 3, col = 'red')
+gsa3
 
-cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
-cluster_20000_h <- as.data.frame(cluster_20000_h)
-
-View(cluster_20000_h)
+View(gsa3)
 
 
-cluster_20000_h <- filter(cluster_20000_h, location != "Qatar")
-cluster_20000_h <- filter(cluster_20000_h, location != "Kiwait")
-cluster_20000_h <- filter(cluster_20000_h, location != "Singapore")
+#Join Clusters
+current_coronadata_with_cluster <- cluster_20000_h %>%
+    left_join(gsa3)
 
-row.names(cluster_20000_h) <- cluster_20000_h$location
-cluster_20000_h$location <- NULL
+View(current_coronadata_with_cluster)
 
 describe(cluster_20000_h)
 
-
-#Standardisieren
-cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:4]))
-
-#Distanzen bilden
-
-dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:4], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
-
-#Clustern
-fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2") #Alternative Methoden: ward.D, single, complete, average, mcquitty ... 
-
-#Plotten
-plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
-
-
-# Es bilden sich 4 Cluster -> 
-    
-     
-     
-     
-
-
-
-
-cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
-cluster_20000_h <- as.data.frame(cluster_20000_h)
-cluster_20000_h <- filter(cluster_20000_h, location != "Qatar")
-
-row.names(cluster_20000_h) <- cluster_20000_h$location
-cluster_20000_h$location <- NULL
-
-
-#Schritt 3: Distanzmatrix
-
-dist_matrix <- dist(cluster_20000_h, method = "euclidean")
-dist_matrix
-
-#Schritt 4: Clusteranalyse
-
-cluster <- hclust(dist_matrix, method = "single")
-cluster
-
-#Schritt 5: Zuordnungs?bersicht 
-
-cluster$merge
-
-#Schritt 6: Dendrogramm
-
-plot(cluster, labels = cluster$labels)
-
-
-plot(points, main = 'Hierarchical clustering', col = as.factor(cluster$cluster)) 
-
-
-#Schritt 7: Elbow-Diagram
-
-plot(39:1, cluster$height, xlab = "Number of Clusters", ylab = "Within SSE", type = "o")
-
-
-fviz_cluster(cluster, data = cluster_20000_h)
-
-
-
-
-
-
-plot(population_density~ total_deaths_per_million, data = current_coronadata)
-with(current_coronadata, text(population_density ~total_deaths_per_million, labels= location, pos=4, cex= .4))
-
-model1<- lm(total_deaths_per_million ~ population_density + `Nurses/1000 2019` + `Life-Expectancy 2019` + `Happiness score` + hospital_beds_per_100k + gdp_per_capita)
-summary(model1)
-
-confint(model1, conf.level = 0.95)
-
-plot(model1)
