@@ -217,6 +217,7 @@ view(current_coronadata)
 
 #filter cases >= 10000 to select only significant countries with an impact on following regression
 #most countries with cases <= 10000 are small countries where we have NA-Values
+#hello
 current_coronadata_filter_20000 <- filter(current_coronadata, total_cases >= 20000)
 
 
