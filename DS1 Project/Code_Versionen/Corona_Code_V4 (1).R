@@ -626,16 +626,42 @@ plot(avg_col_dend)
 #Table with assignments to cluster 
 gsa3 <- cutree(fit1, k = 4)
 abline(h = 3, col = 'red')
-gsa3
+gsa3$V1
 
 View(gsa3)
 
+#Write Cluster in DataSet
+km3$cluster
+cluster_assignment2 <- gsa3
+cluster_assignment2 <- as.data.frame(cluster_assignment2)
 
-#Join Clusters
-current_coronadata_with_cluster <- cluster_20000_h %>%
-    left_join(gsa3)
+cluster_assignment2 <- rownames_to_column(cluster_assignment2, var = "location")
 
-View(current_coronadata_with_cluster)
 
-describe(cluster_20000_h)
+current_corona_with_clusters2 <- current_coronadata_filter_20000 %>%
+  left_join(cluster_assignment2, c("location" = "location"))
+
+View(current_corona_with_clusters2)
+#/Write Cluster in DataSet
+
+
+#Create Table for each Cluster
+corona_cluster_1_2 <- current_corona_with_clusters2
+corona_cluster_1_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 1)
+corona_cluster_2_2 <- current_corona_with_clusters2
+corona_cluster_2_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 2)
+corona_cluster_3_2 <- current_corona_with_clusters2
+corona_cluster_3_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 3)
+corona_cluster_4_2 <- current_corona_with_clusters2
+corona_cluster_4_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 4)
+
+View(corona_cluster_1_2)
+View(corona_cluster_2_2)
+View(corona_cluster_3_2)
+View(corona_cluster_4_2)
+
+
+
+
+
 
