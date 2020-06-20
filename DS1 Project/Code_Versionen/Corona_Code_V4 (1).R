@@ -252,27 +252,6 @@ view(current_coronadata_filter_20000)
 
 #----------------<Regression analysis- death rate>----------------------------------------------#
 
-corona_data_death_explanation <- current_coronadata_filter_10000
-
-corona_data_death_explanation <- filter(corona_data_death_explanation, location != "Ukraine")
-
-lin_reg_cov_deaths <- lm( cvd_death_rate ~ population_density + median_age + aged_65_older + diabetes_prevalence + hospital_beds_per_100k + Health_Expenditure_2018 + `Happiness score` + `Life-Expectancy 2019` + `Nurses/1000 2019` + `Physicians/1000 2019` , data = corona_data_death_explanation)
-summary(lin_reg_cov_deaths)
-
-cor(corona_data_death_explanation$median_age, corona_data_death_explanation$`Life-Expectancy 2019`)
-cor(corona_data_death_explanation$median_age, corona_data_death_explanation$aged_65_older)
-cor(corona_data_death_explanation$`Nurses/1000 2019`, corona_data_death_explanation$`Physicians/1000 2019`)
-cor(corona_data_death_explanation$Health_Expenditure_2018, corona_data_death_explanation$gdp_per_capita)
-
-lin_reg_cov_deaths_pm <- lm( cvd_death_rate ~ diabetes_prevalence + hospital_beds_per_100k + `Life-Expectancy 2019` + `Nurses/1000 2019` + `Physicians/1000 2019` , data = corona_data_death_explanation)
-summary(lin_reg_cov_deaths_pm)
-
-plot(`Life-Expectancy 2019`, cvd_death_rate)
-
-plot(Health_Expenditure_2018, cvd_death_rate)
-
-lin_reg_deaths_he <- lm ( cvd_death_rate ~ poly(Health_Expenditure_2018,4, raw = T) + poly(`Life-Expectancy 2019`,4, raw = T), data = corona_data_death_explanation)
-summary(lin_reg_deaths_he)
 
 
 #----------------</Regression analysis - death rate>---------------------------------------------#
@@ -480,7 +459,7 @@ fviz_cluster(km3, data = cluster_20000)
 
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000 <- as.data.frame(cluster_20000)
-cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore")
+cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
 row.names(cluster_20000) <- cluster_20000$location
 cluster_20000$location <- NULL
 cluster_20000 <- scale(cluster_20000)
@@ -516,7 +495,7 @@ fviz_cluster(km4, data = cluster_20000)
 
 cluster_20000_bip <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections', 'gdp_per_capita' )
 cluster_20000_bip <- as.data.frame(cluster_20000_bip)
-cluster_20000_bip <- filter(cluster_20000_bip, location != "Qatar" & location != "Kuwait" & location != "Singapore")
+cluster_20000_bip <- filter(cluster_20000_bip, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
 row.names(cluster_20000_bip) <- cluster_20000_bip$location
 cluster_20000_bip$location <- NULL
 cluster_20000_bip <- scale(cluster_20000_bip)
@@ -544,6 +523,8 @@ view(cluster_20000_bip)
 fviz_cluster(km2, data = cluster_20000_bip)
 fviz_cluster(km3, data = cluster_20000_bip)
 fviz_cluster(km4, data = cluster_20000_bip)
+
+view(current_coronadata_filter_20000)
 
 
 
@@ -622,7 +603,7 @@ dbscan <- dbscan(cluster_20000, eps = 1, minPts = 3, weights = NULL)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
-dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 3, weights = NULL)
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 3, weights = NULL, borderPoints = TRUE)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
@@ -674,32 +655,6 @@ dbscan <- dbscan(cluster_20000, eps = 1.5, minPts = 5, weights = NULL)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
-
-
-optics <- optics(cluster_20000, eps = 1.1, minPts = 2, search = "kdtree", bucketSize = 10, splitRule = "suggest", approx = 0)
-optics
-
-plot(optics)
-
-fviz_cluster(optics, data = cluster_20000)
-
-plot(cluster_20000, col = optics$cluster+1L)
-
-hullplot(cluster_20000, optics)
-hullplot(cluster_20000, optics$cluster)
-
-optic <- dbscan::optics(cluster_20000, eps = 1.5, minPts = 3)
-summary(optic)
-optic$order
-optic$reachdist
-optic$predecessor
-xi_optics <- dbscan::extractXi(optic, xi = 0.03)
-
-ggplot_optics(optics, groups = xi_optics$cluster)
-optics$cluster
-
-lel <- optics::extractXi()
-
 #----------------</Clustering dbscan>------------------------------------------------------------#
 
 
@@ -717,8 +672,6 @@ View(cluster_20000_h)
 
 row.names(cluster_20000_h) <- cluster_20000_h$location
 cluster_20000_h$location <- NULL
-
-describe(cluster_20000_h)
 
 
 #Standardisieren Option 1:
@@ -745,9 +698,9 @@ plot(avg_col_dend)
 #Table with assignments to cluster 
 gsa3 <- cutree(fit1, k = 4)
 abline(h = 3, col = 'red')
-gsa3$V1
 
 View(gsa3)
+
 
 #Write Cluster in DataSet
 km3$cluster
