@@ -30,7 +30,7 @@ options(scipen = 5)
 
 #----------------<read corona data>-------------------------------------------------------------#
 #read csv-file corona time series  2020_05_29_CoronaData.csv
-CoronaData <- read.csv(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
+CoronaData <- read.csv(url("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Corona_Zeitreihen/corona_data.csv"))
 CoronaData <- as_tibble(CoronaData)
 View(CoronaData)
 
