@@ -748,7 +748,7 @@ dist_cluster_20000_filtered_h <- dist(cluster_20000_h_filtered_scaled[,1:6], met
 
 #Clustern
 cluster_20000_hierarchical_filtered <- hclust(dist_cluster_20000_filtered_h, method = "ward.D2")
->>>>>>> Stashed changes
+# Stashed changes
 
 #Plotten
 plot(cluster_20000_hierarchical_filtered, hang=-1, labels = cluster_20000_h_filtered$location, cex= 0.7)
