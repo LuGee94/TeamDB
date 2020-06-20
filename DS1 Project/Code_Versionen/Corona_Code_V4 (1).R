@@ -6,6 +6,7 @@
 #install.packages("factoextra")
 #install.packages("dbscan")
 #install.packages("data.table")
+#install.packages("opticskxi")
 
 
 library(tidyverse) # -> standard library for Data Science in R: Plots, data wrangling and modeling
@@ -17,6 +18,7 @@ library(dbscan)
 library(data.table)
 library(dplyr)
 library(utils)
+library(opticskxi)
 
 rm(list=ls())
 
@@ -507,6 +509,44 @@ fviz_cluster(km2, data = cluster_20000)
 fviz_cluster(km3, data = cluster_20000)
 fviz_cluster(km4, data = cluster_20000)
 
+
+
+
+#lets go for a last try with BIP
+
+cluster_20000_bip <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections', 'gdp_per_capita' )
+cluster_20000_bip <- as.data.frame(cluster_20000_bip)
+cluster_20000_bip <- filter(cluster_20000_bip, location != "Qatar" & location != "Kuwait" & location != "Singapore")
+row.names(cluster_20000_bip) <- cluster_20000_bip$location
+cluster_20000_bip$location <- NULL
+cluster_20000_bip <- scale(cluster_20000_bip)
+
+cor(cluster_20000_bip)
+
+
+
+km2 <- kmeans(cluster_20000_bip, 2, iter.max = 25, nstart = 25)
+km3 <- kmeans(cluster_20000_bip, 3, iter.max = 25, nstart = 25)
+km4 <- kmeans(cluster_20000_bip, 4, iter.max = 25, nstart = 25)
+km5 <- kmeans(cluster_20000_bip, 5, iter.max = 25, nstart = 25)
+km6 <- kmeans(cluster_20000_bip, 6, iter.max = 25, nstart = 25)
+km7 <- kmeans(cluster_20000_bip, 7, iter.max = 25, nstart = 25)
+km8 <- kmeans(cluster_20000_bip, 8, iter.max = 25, nstart = 25)
+km9 <- kmeans(cluster_20000_bip, 9, iter.max = 25, nstart = 25)
+
+wss <- c(sum(km2$withinss), sum(km3$withinss), sum(km4$withinss),
+         + sum(km5$withinss), sum(km6$withinss), sum(km7$withinss), sum(km8$withinss), sum(km9$withinss))
+names(wss) <- 2:9
+barplot(wss)
+
+view(cluster_20000_bip)
+
+fviz_cluster(km2, data = cluster_20000_bip)
+fviz_cluster(km3, data = cluster_20000_bip)
+fviz_cluster(km4, data = cluster_20000_bip)
+
+
+
 #no relevant error reduce with 4 clusters, 3 clusters are the optimal number of k (in our opinion)
 #regarding to elbow-knick of barplot
 
@@ -556,8 +596,33 @@ view(corona_cluster_3)
 
 #----------------<Clustering dbscan>-------------------------------------------------------------#
 
+#try 2 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
 
-dbscan <- dbscan(cluster_20000, eps = 1, minPts = 2, weights = NULL)
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 2, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 2, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 2, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 2, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+#try 3 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 3, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 3, weights = NULL)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
@@ -565,11 +630,45 @@ dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 3, weights = NULL)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
-
-dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 2, weights = NULL)
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 3, weights = NULL)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
+#try 4 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 4, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 4, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+
+#try 5minpts
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 5, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 5, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 5, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+
+dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 5, weights = NULL)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
 
 dbscan <- dbscan(cluster_20000, eps = 1.5, minPts = 5, weights = NULL)
 dbscan
@@ -577,6 +676,29 @@ fviz_cluster(dbscan, data = cluster_20000)
 
 
 
+optics <- optics(cluster_20000, eps = 1.1, minPts = 2, search = "kdtree", bucketSize = 10, splitRule = "suggest", approx = 0)
+optics
+
+plot(optics)
+
+fviz_cluster(optics, data = cluster_20000)
+
+plot(cluster_20000, col = optics$cluster+1L)
+
+hullplot(cluster_20000, optics)
+hullplot(cluster_20000, optics$cluster)
+
+optic <- dbscan::optics(cluster_20000, eps = 1.5, minPts = 3)
+summary(optic)
+optic$order
+optic$reachdist
+optic$predecessor
+xi_optics <- dbscan::extractXi(optic, xi = 0.03)
+
+ggplot_optics(optics, groups = xi_optics$cluster)
+optics$cluster
+
+lel <- optics::extractXi()
 
 #----------------</Clustering dbscan>------------------------------------------------------------#
 
