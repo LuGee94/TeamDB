@@ -19,9 +19,7 @@ library(dplyr)
 library(utils)
 
 rm(list=ls())
-
 options(scipen = 5)
-
 #----------------</prepare>---------------------------------------------------------------------#
 
 
@@ -31,33 +29,32 @@ options(scipen = 5)
 CoronaData <- read.csv(url("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv"))
 CoronaData <- as_tibble(CoronaData)
 View(CoronaData)
-
 #----------------</read corona data>------------------------------------------------------------#
 
 
 
 #----------------<read additional data>---------------------------------------------------------#
-#read Health_expenditure_per_Capita.xls
+#read Health_expenditure_per_Capita
 HealthExpenditure <- read.csv("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Gesundheitsausgaben%20pro%20Kopf/Health_expenditure_per_Capita.csv", check.names = FALSE)
 HealthExpenditure <- as_tibble(HealthExpenditure)
-View(HealthExpenditure)
+#View(HealthExpenditure)
 
-#read HappynessIndex Index.xlsx
+#read HappynessIndex Index
 HappynessIndex <- read.csv("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Happyness_Index/happynessindex.csv", check.names = FALSE)
 HappynessIndex <- as_tibble(HappynessIndex)
 #View(HappynessIndex)
 
-#read life expectancy - API_SP.DYN.LE00.IN_DS2_en_excel_v2_1120941.xls
+#read life expectancy - API_SP.DYN.LE00.IN_DS2_en_excel_v2_1120941
 LifeExpectancy <- read.csv("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Lebenserwartung%20pro%20Land/life_expectancy_2019.csv", check.names = FALSE)
 LifeExpectancy <- as_tibble(LifeExpectancy)
 #View(LifeExpectancy)
 
-#read API_SH.MED.NUMW.xlsx
+#read API_SH.MED.NUMW
 Nurses_per_1000 <- read.csv("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Nurses%20per%201000/nurses_per_1000.csv", check.names = FALSE)
 Nurses_per_1000 <- as_tibble(Nurses_per_1000)
 #View(Nurses_per_1000)
 
-#read physicians/1000 API_SH.MED.PHYS.xlsx
+#read physicians/1000 API_SH.MED.PHYS
 Physicians_per_1000 <- read.csv("https://raw.githubusercontent.com/LuGee94/TeamDB/master/DS1%20Project/Datenquellen/Physicians%20per%201000/physicians_per_1000.csv", check.names = FALSE)
 Physicians_per_1000 <- as_tibble(Physicians_per_1000)
 #View(Physicians_per_1000)
@@ -68,18 +65,20 @@ Physicians_per_1000 <- as_tibble(Physicians_per_1000)
 #----------------<prep corona data>-------------------------------------------------------------#
 #read csv-file corona time series  2020_05_29_CoronaData.csv
 
-# World contains sum, filter that out
+# Column World contains sumarized values -> rows
 CoronaData <- filter(CoronaData, location != "World")
+
+# Transform Date
 CoronaData$date <- as.Date(CoronaData$date, format = "%Y-%m-%d")
 #----------------</prep corona data>------------------------------------------------------------#
 
 
 
 #----------------<prep additional data>---------------------------------------------------------#
-
 #rename columns Health Expenditure to identify source of feature later
-#delete column because we dont need it
 names(HealthExpenditure)[names(HealthExpenditure) == "2018"] <- "Health_Expenditure_2018"
+
+#delete column "Country Name" because we dont need it
 HealthExpenditure$'Country Name' <- NULL
 
 #rename columns HappynessIndex to identify source of feature later
@@ -95,22 +94,30 @@ names(HappynessIndex)[names(HappynessIndex) == "Explained by: Healthy life expec
 
 #rename columns LifeExpectancy to identify source of feature later
 names(LifeExpectancy)[names(LifeExpectancy) == "2019"] <- "Life-Expectancy 2019"
+
+#delete column "Country Name" because we dont need it
 LifeExpectancy$'Country Name' <- NULL
 
 #rename columns Nurses_per_1000 to identify source of feature later
 names(Nurses_per_1000)[names(Nurses_per_1000) == "2019"] <- "Nurses/1000 2019"
+
+#delete column "Country Name" because we dont need it
 Nurses_per_1000$'Country Name' <- NULL
 
 #rename columns Physicians_per_1000 to identify source of feature later
 names(Physicians_per_1000)[names(Physicians_per_1000) == "2019"] <- "Physicians/1000 2019"
+
+#delete column "Country Name" because we dont need it
 Physicians_per_1000$'Country Name' <- NULL
 
+#obsolete column
+CoronaData$'test_units' <- NULL
+CoronaData$continent <- NULL
 #----------------</prep additional data>--------------------------------------------------------#
 
 
 
-#----------------<Merge Corona Data with additional Data>---------------------------------------#
-
+#----------------<Merge additional Data to corona data>---------------------------------------#
 CoronaData_Joined <- as_tibble(CoronaData)
 CoronaData_Joined <- CoronaData_Joined %>%
   left_join(HealthExpenditure, c("iso_code" = "Country Code"))  %>%
@@ -118,18 +125,11 @@ CoronaData_Joined <- CoronaData_Joined %>%
   left_join(LifeExpectancy, c("iso_code" = "Country Code")) %>%
   left_join(Nurses_per_1000, c("iso_code" = "Country Code")) %>%
   left_join(Physicians_per_1000, c("iso_code" = "Country Code"))
-
-
-
 #----------------</Merge Corona Data with additional Data>--------------------------------------#
 
 
 
 #----------------<Transform and Calculate Corona Data>------------------------------------------#
-
-#obsolete Feature
-CoronaData$'test_units' <- NULL
-
 #create columns to learn something about infection boundary -100 -1000 - 10000 -20000 -100000
 Running_CoronaData <- CoronaData_Joined %>%
   group_by(location) %>%
@@ -167,16 +167,15 @@ max_data_corona_dataset <- max(Running_CoronaData$date)
 
 #filter data to the most actual date
 current_coronadata <- filter(Running_CoronaData, date == max_data_corona_dataset)
+
 #remove data <= 100 infections
 current_coronadata <- filter(current_coronadata, day_from_100th_infection != 0)
-
 
 #get the range in days between 100 and 1000 infections
 CoronaData_1000 <- filter(Running_CoronaData, day_from_1000th_infection == 1) %>%
   ungroup() %>%
   select(location, day_from_100th_infection)
 names(CoronaData_1000)[names(CoronaData_1000) == "day_from_100th_infection"] <- "days_100_to_1000_infections"
-
 
 #get the range in days between 100 and 10000 / 1000 and 10000 infections
 CoronaData_10000<- filter(Running_CoronaData, day_from_10000th_infection == 1) %>%
@@ -185,7 +184,6 @@ CoronaData_10000<- filter(Running_CoronaData, day_from_10000th_infection == 1) %
 names(CoronaData_10000)[names(CoronaData_10000) == "day_from_100th_infection"] <- "days_100_to_10000_infections"
 names(CoronaData_10000)[names(CoronaData_10000) == "day_from_1000th_infection"] <- "days_1000_to_10000_infections"
 
-
 #get the range in days between 100 and 20000 / 1000 and 20000 / 10000 and 20000 infections
 CoronaData_20000<- filter(Running_CoronaData, day_from_20000th_infection == 1) %>%
   ungroup() %>%
@@ -193,8 +191,6 @@ CoronaData_20000<- filter(Running_CoronaData, day_from_20000th_infection == 1) %
 names(CoronaData_20000)[names(CoronaData_20000) == "day_from_100th_infection"] <- "days_100_to_20000_infections"
 names(CoronaData_20000)[names(CoronaData_20000) == "day_from_1000th_infection"] <- "days_1000_to_20000_infections"
 names(CoronaData_20000)[names(CoronaData_20000) == "day_from_10000th_infection"] <- "days_10000_to_20000_infections"
-
-
 
 #get the range in days between 100 and 100000 / 1000 and 100000 / 10000 and 100000 infections
 CoronaData_100000<- filter(Running_CoronaData, day_from_100000th_infection == 1) %>%
@@ -205,23 +201,20 @@ names(CoronaData_100000)[names(CoronaData_100000) == "day_from_1000th_infection"
 names(CoronaData_100000)[names(CoronaData_100000) == "day_from_10000th_infection"] <- "days_10000_to_100000_infections"
 names(CoronaData_100000)[names(CoronaData_100000) == "day_from_20000th_infection"] <- "days_20000_to_100000_infections"
 
-#join the ranges between the different boundaries to out current_date_data
+#join the ranges between the different boundaries to current_data
 current_coronadata <- current_coronadata %>%
   left_join(CoronaData_1000, c("location" = "location"))  %>%
   left_join(CoronaData_10000, c("location" = "location"))  %>%
   left_join(CoronaData_20000, c("location" = "location")) %>%
   left_join(CoronaData_100000, c("location" = "location"))  
 
+#view(current_coronadata)
 
-view(current_coronadata)
-
-#filter cases >= 10000 to select only significant countries with an impact on following regression
-#most countries with cases <= 10000 are small countries where we have NA-Values
+#filter cases >= 20000 to select only significant countries with an impact on following regression
+#most countries with cases <= 20000 are small countries where we have NA-Values
 current_coronadata_filter_20000 <- filter(current_coronadata, total_cases >= 20000)
 
-
 #filter irrelevant columns out
-
 current_coronadata_filter_20000$'tests_units' <- NULL
 current_coronadata_filter_20000$'total_tests' <- NULL
 current_coronadata_filter_20000$'new_tests' <- NULL
@@ -233,20 +226,17 @@ current_coronadata_filter_20000$'stringency_index' <- NULL
 current_coronadata_filter_20000$'aged_70_older' <- NULL
 current_coronadata_filter_20000$'extreme_poverty' <- NULL
 current_coronadata_filter_20000$'handwashing_facilities' <- NULL
+current_coronadata_filter_20000$population <- NULL
 current_coronadata_filter_20000$'cases100' <- NULL
 current_coronadata_filter_20000$'cases1000' <- NULL
 current_coronadata_filter_20000$'cases10000' <- NULL
 current_coronadata_filter_20000$'cases100000' <- NULL
 current_coronadata_filter_20000$cases20000 <- NULL
-
-
-current_coronadata_filter_20000$population <- NULL
-
-view(current_coronadata_filter_20000)
-
+#view(current_coronadata_filter_20000)
 #----------------</Transform and Calculate Corona Data>-----------------------------------------#
 
 
+<<<<<<< Updated upstream
 
 #----------------<Regression analysis- death rate>----------------------------------------------#
 
@@ -273,8 +263,16 @@ lin_reg_deaths_he <- lm ( cvd_death_rate ~ poly(Health_Expenditure_2018,4, raw =
 summary(lin_reg_deaths_he)
 
 
-#----------------</Regression analysis - death rate>---------------------------------------------#
+=======
 
+#----------------<Regression analysis - death rate>---------------------------------------------#
+# Additional playing around with death rate regression
+lin_reg_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = Corona_day50)
+summary(lin_reg_deaths) #-> Interesting: Hospital beds per thousand, diabetes_prevalence
+plot(Corona_day50$hospital_beds_per_thousand, Corona_day50$total_deaths_per_million)
+plot(Corona_day50$diabetes_prevalence, Corona_day50$total_deaths_per_million)
+>>>>>>> Stashed changes
+#----------------</Regression analysis - death rate>---------------------------------------------#
 
 
 
@@ -287,83 +285,100 @@ summary(lin_reg_deaths_he)
 
 
 
-#----------------<Clustering kmeans>-------------------------------------------------------------#
-#ungroup(current_coronadata)
-
+#----------------<Clustering kmeans - cases and deaths per million>------------------------------#
 #cluster based on total cases per million and total deaths per million
-cluster_coronadata <- select(current_coronadata_filter_20000,'location','total_cases_per_million','total_deaths_per_million')
-cluster_coronadata <- as.data.frame(cluster_coronadata)
+cluster_km_coronadata <- select(current_coronadata_filter_20000,'location','total_cases_per_million','total_deaths_per_million')
+cluster_km_coronadata <- as.data.frame(cluster_km_coronadata)
 
-row.names(cluster_coronadata) <- cluster_coronadata$location
-cluster_coronadata$location <- NULL
+#define the row name as location and delete column location
+row.names(cluster_km_coronadata) <- cluster_km_coronadata$location
+cluster_km_coronadata$location <- NULL
 
-view(cluster_coronadata)
+#view(cluster_km_coronadata)
 
+#set seed to make analysis reproducible
 set.seed(123)
 
-km2 <- kmeans(cluster_coronadata, 2, iter.max = 25, nstart = 25)
-km3 <- kmeans(cluster_coronadata, 3, iter.max = 25, nstart = 25)
-km4 <- kmeans(cluster_coronadata, 4, iter.max = 25, nstart = 25)
-km5 <- kmeans(cluster_coronadata, 5, iter.max = 25, nstart = 25)
-km6 <- kmeans(cluster_coronadata, 6, iter.max = 25, nstart = 25)
-km7 <- kmeans(cluster_coronadata, 7, iter.max = 25, nstart = 25)
-km8 <- kmeans(cluster_coronadata, 8, iter.max = 25, nstart = 25)
-km9 <- kmeans(cluster_coronadata, 9, iter.max = 25, nstart = 25)
+# define different k sizes (2-9) for the k mean algorithm
+km2 <- kmeans(cluster_km_coronadata, 2, iter.max = 25, nstart = 25)
+km3 <- kmeans(cluster_km_coronadata, 3, iter.max = 25, nstart = 25)
+km4 <- kmeans(cluster_km_coronadata, 4, iter.max = 25, nstart = 25)
+km5 <- kmeans(cluster_km_coronadata, 5, iter.max = 25, nstart = 25)
+km6 <- kmeans(cluster_km_coronadata, 6, iter.max = 25, nstart = 25)
+km7 <- kmeans(cluster_km_coronadata, 7, iter.max = 25, nstart = 25)
+km8 <- kmeans(cluster_km_coronadata, 8, iter.max = 25, nstart = 25)
+km9 <- kmeans(cluster_km_coronadata, 9, iter.max = 25, nstart = 25)
 
+View(cluster_km_coronadata)
 
+#
 wss <- c(sum(km2$withinss), sum(km3$withinss), sum(km4$withinss),
          + sum(km5$withinss), sum(km6$withinss), sum(km7$withinss), sum(km8$withinss), sum(km9$withinss))
 names(wss) <- 2:9
 barplot(wss)
 
-fviz_cluster(km2, data = cluster_coronadata)
-fviz_cluster(km3, data = cluster_coronadata)
+#Barplot shows the variance within a cluster
+#A general rule -> search for an "elbow" an thats the number of clusters you should use
+#Therefore we considered 3 or 4 clusters
+
+#Visualization of clusters 
+fviz_cluster(km3, data = cluster_km_coronadata)
+fviz_cluster(km4, data = cluster_km_coronadata)
 
 #outlier by qatar, filter that out
+cluster_km_coronadata_filtered <- select(current_coronadata_filter_20000,'location','total_cases_per_million','total_deaths_per_million')
+cluster_km_coronadata_filtered <- filter(cluster_km_coronadata_filtered, location != "Qatar")
+cluster_km_coronadata_filtered <- as.data.frame(cluster_km_coronadata_filtered)
 
-cluster_coronadata_filtered <- select(current_coronadata_filter_20000,'location','total_cases_per_million','total_deaths_per_million')
-cluster_coronadata_filtered <- filter(cluster_coronadata_filtered, location != "Qatar")
-cluster_coronadata_filtered <- as.data.frame(cluster_coronadata_filtered)
+#define the row name as location and delete column location
+row.names(cluster_km_coronadata_filtered) <- cluster_km_coronadata_filtered$location
+cluster_km_coronadata_filtered$location <- NULL
 
+# define different k sizes (2-9) for the k mean algorithm 
+km2_filtered <- kmeans(cluster_km_coronadata_filtered, 2, iter.max = 25, nstart = 25)
+km3_filtered <- kmeans(cluster_km_coronadata_filtered, 3, iter.max = 25, nstart = 25)
+km4_filtered <- kmeans(cluster_km_coronadata_filtered, 4, iter.max = 25, nstart = 25)
+km5_filtered <- kmeans(cluster_km_coronadata_filtered, 5, iter.max = 25, nstart = 25)
+km6_filtered <- kmeans(cluster_km_coronadata_filtered, 6, iter.max = 25, nstart = 25)
+km7_filtered <- kmeans(cluster_km_coronadata_filtered, 7, iter.max = 25, nstart = 25)
+km8_filtered <- kmeans(cluster_km_coronadata_filtered, 8, iter.max = 25, nstart = 25)
+km9_filtered <- kmeans(cluster_km_coronadata_filtered, 9, iter.max = 25, nstart = 25)
 
-row.names(cluster_coronadata_filtered) <- cluster_coronadata_filtered$location
-cluster_coronadata_filtered$location <- NULL
-
-km2_filtered <- kmeans(cluster_coronadata_filtered, 2, iter.max = 25, nstart = 25)
-km3_filtered <- kmeans(cluster_coronadata_filtered, 3, iter.max = 25, nstart = 25)
-km4_filtered <- kmeans(cluster_coronadata_filtered, 4, iter.max = 25, nstart = 25)
-km5_filtered <- kmeans(cluster_coronadata_filtered, 5, iter.max = 25, nstart = 25)
-km6_filtered <- kmeans(cluster_coronadata_filtered, 6, iter.max = 25, nstart = 25)
-km7_filtered <- kmeans(cluster_coronadata_filtered, 7, iter.max = 25, nstart = 25)
-km8_filtered <- kmeans(cluster_coronadata_filtered, 8, iter.max = 25, nstart = 25)
-km9_filtered <- kmeans(cluster_coronadata_filtered, 9, iter.max = 25, nstart = 25)
-
-
+#
 wss_filtered <- c(sum(km2_filtered$withinss), sum(km3_filtered$withinss), sum(km4_filtered$withinss),
          + sum(km5_filtered$withinss), sum(km6_filtered$withinss), sum(km7_filtered$withinss), sum(km8_filtered$withinss), sum(km9_filtered$withinss))
 names(wss_filtered) <- 2:9
 barplot(wss_filtered)
 
-fviz_cluster(km2_filtered, data = cluster_coronadata_filtered)
-fviz_cluster(km3_filtered, data = cluster_coronadata_filtered)
+#Barplot shows an elbow for 3 Clusters - 
+#For further analysis we still consider 4 clusters 
+
+#Visualization of clusters 
+fviz_cluster(km3_filtered, data = cluster_km_coronadata_filtered)
+fviz_cluster(km4_filtered, data = cluster_km_coronadata_filtered)
+
+#----------------</Clustering kmeans - cases and deaths per million>-----------------------------#
 
 
-#lets try the development of infections
 
+#----------------<Clustering kmeans - infection spreading>-----------------------------#
+
+#Data set including the development of infections
 cluster_corona_development <- select(current_coronadata_filter_20000,'location','days_100_to_1000_infections','days_100_to_10000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections')
 cluster_corona_development  <- as.data.frame(cluster_corona_development)
+
 
 row.names(cluster_corona_development) <- cluster_corona_development$location
 cluster_corona_development$location <- NULL
 cluster_corona_development$total_cases <- NULL
 
-
+#examine the correlation between the time developments
 cor(cluster_corona_development)
 
 #because theres correlation between column 2 and 3, we remove column 2, because the correlation between column1&column3 < column1&column2
-
 cluster_corona_development$days_100_to_10000_infections <- NULL
 
+# define different k sizes (2-9) for the k mean algorithm 
 km2_dev <- kmeans(cluster_corona_development, 2, iter.max = 25, nstart = 25)
 km3_dev <- kmeans(cluster_corona_development, 3, iter.max = 25, nstart = 25)
 km4_dev <- kmeans(cluster_corona_development, 4, iter.max = 25, nstart = 25)
@@ -378,24 +393,28 @@ wss_dev <- c(sum(km2_dev$withinss), sum(km3_dev$withinss), sum(km4_dev$withinss)
 names(wss_dev) <- 2:9
 barplot(wss_dev)
 
+#There is no unambiguous amount of clusters - the most obvious is 3 clusters
+# 4 clusters is still in consideration
 
-
-fviz_cluster(km2_dev, data = cluster_corona_development)
+#Visualization of clusters 
 fviz_cluster(km3_dev, data = cluster_corona_development)
+fviz_cluster(km4_dev, data = cluster_corona_development)
+#----------------</Clustering kmeans - infection spreading>-----------------------------#
 
 
-
+#----------------<Clustering kmeans - Clustervariables 1 & 2 together>------------------#
 #lets try all of these variables
-
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000 <- as.data.frame(cluster_20000)
 row.names(cluster_20000) <- cluster_20000$location
 cluster_20000$location <- NULL
 
+
+#Is there a correlation between variables? 
 cor(cluster_20000)
 
 
-
+# define different k sizes (2-9) for the k mean algorithm 
 km2 <- kmeans(cluster_20000, 2, iter.max = 25, nstart = 25)
 km3 <- kmeans(cluster_20000, 3, iter.max = 25, nstart = 25)
 km4 <- kmeans(cluster_20000, 4, iter.max = 25, nstart = 25)
@@ -411,11 +430,11 @@ names(wss) <- 2:9
 barplot(wss)
 
 
-
-fviz_cluster(km2, data = cluster_20000)
+#Visualization of clusters 
 fviz_cluster(km3, data = cluster_20000)
+fviz_cluster(km4, data = cluster_20000)
 
-#outlier qatar, filter that out
+#Qatar is a statistical outlier, for better clustering results we filter that out
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000 <- as.data.frame(cluster_20000)
 cluster_20000 <- filter(cluster_20000, location != "Qatar")
@@ -438,11 +457,12 @@ names(wss) <- 2:9
 barplot(wss)
 
 
-
-fviz_cluster(km2, data = cluster_20000)
+#Visualization of clusters 
 fviz_cluster(km3, data = cluster_20000)
+fviz_cluster(km4, data = cluster_20000)
 
-#result looks weird, maybe because the variables aren't standardized, letz fix that
+#result looks aren´t satisfying
+#The Values arent standardized - Fix it
 
 
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
@@ -469,22 +489,28 @@ names(wss) <- 2:9
 barplot(wss)
 
 
-
-fviz_cluster(km2, data = cluster_20000)
+#Visualization of clusters 
 fviz_cluster(km3, data = cluster_20000)
+fviz_cluster(km4, data = cluster_20000)
 
 
-#result still looks weird, maybe because we have two outliers singapore and kuwait, let's check the result without them
+#statistical outliers  singapore, kuwait and Bahrain
+#check the result without them
 
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000 <- as.data.frame(cluster_20000)
+<<<<<<< Updated upstream
 cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore")
+=======
+cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
+
+>>>>>>> Stashed changes
 row.names(cluster_20000) <- cluster_20000$location
 cluster_20000$location <- NULL
+
 cluster_20000 <- scale(cluster_20000)
 
 cor(cluster_20000)
-
 
 
 km2 <- kmeans(cluster_20000, 2, iter.max = 25, nstart = 25)
@@ -502,13 +528,83 @@ names(wss) <- 2:9
 barplot(wss)
 
 
-
-fviz_cluster(km2, data = cluster_20000)
+#Visualization of clusters 
 fviz_cluster(km3, data = cluster_20000)
 fviz_cluster(km4, data = cluster_20000)
+#----------------</Clustering kmeans - Clustervariables 1 & 2 together>-----------------#
 
+<<<<<<< Updated upstream
+=======
+
+
+#---------<Clustering kmeans - Clustervariables 1 & 2 together + GDP per Capita>--------#
+cluster_20000_bip <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections', 'gdp_per_capita' )
+cluster_20000_bip <- as.data.frame(cluster_20000_bip)
+#cluster_20000_bip <- filter(cluster_20000_bip, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
+cluster_20000_bip <- filter(cluster_20000_bip)
+
+row.names(cluster_20000_bip) <- cluster_20000_bip$location
+cluster_20000_bip$location <- NULL
+cluster_20000_bip <- scale(cluster_20000_bip)
+
+cor(cluster_20000_bip)
+
+km2 <- kmeans(cluster_20000_bip, 2, iter.max = 25, nstart = 25)
+km3 <- kmeans(cluster_20000_bip, 3, iter.max = 25, nstart = 25)
+km4 <- kmeans(cluster_20000_bip, 4, iter.max = 25, nstart = 25)
+km5 <- kmeans(cluster_20000_bip, 5, iter.max = 25, nstart = 25)
+km6 <- kmeans(cluster_20000_bip, 6, iter.max = 25, nstart = 25)
+km7 <- kmeans(cluster_20000_bip, 7, iter.max = 25, nstart = 25)
+km8 <- kmeans(cluster_20000_bip, 8, iter.max = 25, nstart = 25)
+km9 <- kmeans(cluster_20000_bip, 9, iter.max = 25, nstart = 25)
+
+wss <- c(sum(km2$withinss), sum(km3$withinss), sum(km4$withinss),
+         + sum(km5$withinss), sum(km6$withinss), sum(km7$withinss), sum(km8$withinss), sum(km9$withinss))
+names(wss) <- 2:9
+barplot(wss)
+
+#Visualization of clusters 
+fviz_cluster(km3, data = cluster_20000_bip)
+fviz_cluster(km4, data = cluster_20000_bip)
+
+
+#Bahrain, Kuwait, Singapore and Qatar are outliers
+#Try without them 
+cluster_20000_bip <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections', 'gdp_per_capita' )
+cluster_20000_bip <- as.data.frame(cluster_20000_bip)
+cluster_20000_bip <- filter(cluster_20000_bip, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
+
+row.names(cluster_20000_bip) <- cluster_20000_bip$location
+cluster_20000_bip$location <- NULL
+cluster_20000_bip <- scale(cluster_20000_bip)
+
+cor(cluster_20000_bip)
+
+km2 <- kmeans(cluster_20000_bip, 2, iter.max = 25, nstart = 25)
+km3 <- kmeans(cluster_20000_bip, 3, iter.max = 25, nstart = 25)
+km4 <- kmeans(cluster_20000_bip, 4, iter.max = 25, nstart = 25)
+km5 <- kmeans(cluster_20000_bip, 5, iter.max = 25, nstart = 25)
+km6 <- kmeans(cluster_20000_bip, 6, iter.max = 25, nstart = 25)
+km7 <- kmeans(cluster_20000_bip, 7, iter.max = 25, nstart = 25)
+km8 <- kmeans(cluster_20000_bip, 8, iter.max = 25, nstart = 25)
+km9 <- kmeans(cluster_20000_bip, 9, iter.max = 25, nstart = 25)
+
+wss <- c(sum(km2$withinss), sum(km3$withinss), sum(km4$withinss),
+         + sum(km5$withinss), sum(km6$withinss), sum(km7$withinss), sum(km8$withinss), sum(km9$withinss))
+names(wss) <- 2:9
+barplot(wss)
+
+#Visualization of clusters 
+fviz_cluster(km3, data = cluster_20000_bip)
+fviz_cluster(km4, data = cluster_20000_bip)
+
+>>>>>>> Stashed changes
 #no relevant error reduce with 4 clusters, 3 clusters are the optimal number of k (in our opinion)
 #regarding to elbow-knick of barplot
+#Due to the hierarchical clustering results, we chose to select 4 clusters per analysis to be able to compare the results!
+
+
+#Create Cluster data seperated by cluster assignment
 
 km3$cluster
 cluster_assignment <- km3$cluster
@@ -524,17 +620,6 @@ current_corona_with_clusters <- current_coronadata_filter_20000 %>%
 current_corona_with_clusters <- filter(current_corona_with_clusters, cluster_assignment != "NA")
 view(current_corona_with_clusters)
 
-
-#----------------</Clustering kmeans>------------------------------------------------------------#
-
-
-
-
-
-#----------------<regression analysis based on clusters>-----------------------------------------#
-
-str(current_corona_with_clusters)
-
 corona_cluster_1 <- current_corona_with_clusters
 corona_cluster_1 <- filter(current_corona_with_clusters, cluster_assignment == 1)
 corona_cluster_2 <- current_corona_with_clusters
@@ -545,6 +630,18 @@ corona_cluster_3 <- filter(current_corona_with_clusters, cluster_assignment == 3
 view(corona_cluster_1)
 view(corona_cluster_2)
 view(corona_cluster_3)
+
+#--------</Clustering kmeans - Clustervariables 1 & 2 together + GDP per Capita>--------#
+
+
+
+
+
+#----------------<regression analysis based on clusters>-----------------------------------------#
+
+str(current_corona_with_clusters)
+
+
 
 
 
@@ -585,80 +682,120 @@ fviz_cluster(dbscan, data = cluster_20000)
 
 #----------------<Hierarchical Clustering>-------------------------------------------------------------#
 
-current_coronadata_filter_20000 <- select(current_corona_with_clusters, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections')
-View(current_coronadata_filter_20000)
-
 cluster_20000_h <- select(current_coronadata_filter_20000, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000_h <- as.data.frame(cluster_20000_h)
-
-View(cluster_20000_h)
 
 row.names(cluster_20000_h) <- cluster_20000_h$location
 cluster_20000_h$location <- NULL
 
+<<<<<<< Updated upstream
 describe(cluster_20000_h)
 
 
 #Standardisieren Option 1:
+=======
+#Standardisieren
+>>>>>>> Stashed changes
 cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:6]))
 
 #Distanzen bilden
-
-dist.cluster_20000_h <- dist(cluster_20000_h_scaled[,1:6], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
+dist_cluster_20000_h <- dist(cluster_20000_h_scaled[,1:6], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
 
 #Clustern
-fit1 <- hclust(dist.cluster_20000_h, method = "ward.D2")
+cluster_20000_hierarchical <- hclust(dist_cluster_20000_h, method = "ward.D2")
 
 #Plotten
-plot(fit1, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
-rect.hclust(fit1, k=4)
-abline(h = 3, col = 'red')
+plot(cluster_20000_hierarchical, hang=-1, labels = cluster_20000_h$location, cex= 0.7)
+rect.hclust(cluster_20000_hierarchical, k=4)
+abline(h = 6.5, col = 'red')
 
 suppressPackageStartupMessages(library(dendextend))
-avg_dend_obj <- as.dendrogram(fit1)
-avg_col_dend <- color_branches(avg_dend_obj, h = 5, k=4, border = 4)
-plot(avg_col_dend)
+cluster_20000_hierarchical_dendro_obj <- as.dendrogram(cluster_20000_hierarchical)
+cluster_20000_hierarchical_dendro <- color_branches(cluster_20000_hierarchical_dendro_obj, h = 5, k=4, border = 4)
+plot(cluster_20000_hierarchical_dendro)
 
 
 
 
 
 #Table with assignments to cluster 
-gsa3 <- cutree(fit1, k = 4)
+cluster_20000_hierarchical_assignment <- cutree(cluster_20000_hierarchical, k = 4)
 abline(h = 3, col = 'red')
 gsa3$V1
 
-View(gsa3)
+View(cluster_20000_hierarchical_assignment)
 
+<<<<<<< Updated upstream
 #Write Cluster in DataSet
 km3$cluster
 cluster_assignment2 <- gsa3
 cluster_assignment2 <- as.data.frame(cluster_assignment2)
+=======
+#Qatar has an own Cluster -  Bahrain Kuweit and Singapore as well, therefore we remove them from dataset 
 
-cluster_assignment2 <- rownames_to_column(cluster_assignment2, var = "location")
+cluster_20000_h_filtered <- select(current_coronadata_filter_20000, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
+cluster_20000_h_filtered <- as.data.frame(cluster_20000_h_filtered)
+cluster_20000_h_filtered <- filter(cluster_20000_h_filtered, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
+
+row.names(cluster_20000_h_filtered) <- cluster_20000_h_filtered$location
+cluster_20000_h_filtered$location <- NULL
+
+#Standardisieren
+cluster_20000_h_filtered_scaled <- cbind(scale(cluster_20000_h_filtered[,1:6]))
+
+#Distanzen bilden
+dist_cluster_20000_filtered_h <- dist(cluster_20000_h_filtered_scaled[,1:6], method = "euclidean") # Alternative Methoden sind Maximum, Manhatten, canberra, pinary, minkowski
+
+#Clustern
+cluster_20000_hierarchical_filtered <- hclust(dist_cluster_20000_filtered_h, method = "ward.D2")
+>>>>>>> Stashed changes
+
+#Plotten
+plot(cluster_20000_hierarchical_filtered, hang=-1, labels = cluster_20000_h_filtered$location, cex= 0.7)
+rect.hclust(cluster_20000_hierarchical_filtered, k=4)
+abline( col = 'red')
+
+suppressPackageStartupMessages(library(dendextend))
+cluster_20000_hierarchical_dendro_obj <- as.dendrogram(cluster_20000_hierarchical)
+cluster_20000_hierarchical_dendro <- color_branches(cluster_20000_hierarchical_dendro_obj, h = 5, k=4, border = 4)
+plot(cluster_20000_hierarchical_dendro)
 
 
-current_corona_with_clusters2 <- current_coronadata_filter_20000 %>%
-  left_join(cluster_assignment2, c("location" = "location"))
+#Table with assignments to cluster 
+cluster_20000_hierarchical_assignment_filtered <- cutree(cluster_20000_hierarchical_filtered, k = 4)
+abline(col = 'red')
 
-View(current_corona_with_clusters2)
-#/Write Cluster in DataSet
+View(cluster_20000_hierarchical_assignment_filtered)
+
+#Write Cluster in DataSet
+cluster_20000_hierarchical_assignment <- as.data.frame(cluster_20000_hierarchical_assignment)
+View(cluster_20000_hierarchical_assignment)
+
+cluster_20000_hierarchical_assignment_table <- rownames_to_column(cluster_20000_hierarchical_assignment, var = "location")
+View(cluster_20000_hierarchical_assignment_table)
+
+cluster_20000_h_joined <- current_coronadata_filter_20000 %>%
+  left_join(cluster_20000_hierarchical_assignment_table, c("location" = "location"))
+
+View(cluster_20000_h_joined)
 
 
 #Create Table for each Cluster
-corona_cluster_1_2 <- current_corona_with_clusters2
-corona_cluster_1_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 1)
-corona_cluster_2_2 <- current_corona_with_clusters2
-corona_cluster_2_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 2)
-corona_cluster_3_2 <- current_corona_with_clusters2
-corona_cluster_3_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 3)
-corona_cluster_4_2 <- current_corona_with_clusters2
-corona_cluster_4_2 <- filter(current_corona_with_clusters2, cluster_assignment2 == 4)
+corona_cluster_h1  <- cluster_20000_h_joined
+corona_cluster_h1 <- filter(cluster_20000_h_joined, cluster_assignment2 == 1)
+corona_cluster_h2 <- cluster_20000_h_joined
+corona_cluster_h2 <- filter(cluster_20000_h_joined, cluster_assignment2 == 2)
+corona_cluster_h3 <- cluster_20000_h_joined
+corona_cluster_h3 <- filter(cluster_20000_h_joined, cluster_assignment2 == 3)
+corona_cluster_h4 <- cluster_20000_h_joined
+corona_cluster_h4 <- filter(cluster_20000_h_joined, cluster_assignment2 == 4)
 
-View(corona_cluster_1_2)
-View(corona_cluster_2_2)
-View(corona_cluster_3_2)
-View(corona_cluster_4_2)
+View(corona_cluster_h1)
+View(corona_cluster_h2)
+View(corona_cluster_h3)
+View(corona_cluster_h4)
+
+#----------------</Hierarchical Clustering>-------------------------------------------------------------#
 
 
 
