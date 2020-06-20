@@ -620,9 +620,6 @@ avg_col_dend <- color_branches(avg_dend_obj, h = 5, k=4, border = 4)
 plot(avg_col_dend)
 
 
-
-
-
 #Table with assignments to cluster 
 gsa3 <- cutree(fit1, k = 4)
 abline(h = 3, col = 'red')
@@ -659,9 +656,4 @@ View(corona_cluster_1_2)
 View(corona_cluster_2_2)
 View(corona_cluster_3_2)
 View(corona_cluster_4_2)
-
-
-
-
-
 
