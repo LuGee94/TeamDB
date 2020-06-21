@@ -236,7 +236,6 @@ current_coronadata_filter_20000$cases20000 <- NULL
 #----------------</Transform and Calculate Corona Data>-----------------------------------------#
 
 
-<<<<<<< Updated upstream
 
 #----------------<Regression analysis- death rate>----------------------------------------------#
 
@@ -263,15 +262,12 @@ lin_reg_deaths_he <- lm ( cvd_death_rate ~ poly(Health_Expenditure_2018,4, raw =
 summary(lin_reg_deaths_he)
 
 
-=======
-
 #----------------<Regression analysis - death rate>---------------------------------------------#
 # Additional playing around with death rate regression
 lin_reg_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = Corona_day50)
 summary(lin_reg_deaths) #-> Interesting: Hospital beds per thousand, diabetes_prevalence
 plot(Corona_day50$hospital_beds_per_thousand, Corona_day50$total_deaths_per_million)
 plot(Corona_day50$diabetes_prevalence, Corona_day50$total_deaths_per_million)
->>>>>>> Stashed changes
 #----------------</Regression analysis - death rate>---------------------------------------------#
 
 
@@ -499,12 +495,9 @@ fviz_cluster(km4, data = cluster_20000)
 
 cluster_20000 <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
 cluster_20000 <- as.data.frame(cluster_20000)
-<<<<<<< Updated upstream
-cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore")
-=======
 cluster_20000 <- filter(cluster_20000, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
 
->>>>>>> Stashed changes
+
 row.names(cluster_20000) <- cluster_20000$location
 cluster_20000$location <- NULL
 
@@ -532,9 +525,6 @@ barplot(wss)
 fviz_cluster(km3, data = cluster_20000)
 fviz_cluster(km4, data = cluster_20000)
 #----------------</Clustering kmeans - Clustervariables 1 & 2 together>-----------------#
-
-<<<<<<< Updated upstream
-=======
 
 
 #---------<Clustering kmeans - Clustervariables 1 & 2 together + GDP per Capita>--------#
@@ -598,7 +588,6 @@ barplot(wss)
 fviz_cluster(km3, data = cluster_20000_bip)
 fviz_cluster(km4, data = cluster_20000_bip)
 
->>>>>>> Stashed changes
 #no relevant error reduce with 4 clusters, 3 clusters are the optimal number of k (in our opinion)
 #regarding to elbow-knick of barplot
 #Due to the hierarchical clustering results, we chose to select 4 clusters per analysis to be able to compare the results!
@@ -688,14 +677,10 @@ cluster_20000_h <- as.data.frame(cluster_20000_h)
 row.names(cluster_20000_h) <- cluster_20000_h$location
 cluster_20000_h$location <- NULL
 
-<<<<<<< Updated upstream
-describe(cluster_20000_h)
 
 
-#Standardisieren Option 1:
-=======
 #Standardisieren
->>>>>>> Stashed changes
+
 cluster_20000_h_scaled <- cbind(scale(cluster_20000_h[,1:6]))
 
 #Distanzen bilden
@@ -716,21 +701,13 @@ plot(cluster_20000_hierarchical_dendro)
 
 
 
-
-
 #Table with assignments to cluster 
 cluster_20000_hierarchical_assignment <- cutree(cluster_20000_hierarchical, k = 4)
-abline(h = 3, col = 'red')
-gsa3$V1
+abline(col = 'red')
 
-View(cluster_20000_hierarchical_assignment)
 
-<<<<<<< Updated upstream
-#Write Cluster in DataSet
-km3$cluster
-cluster_assignment2 <- gsa3
-cluster_assignment2 <- as.data.frame(cluster_assignment2)
-=======
+#View(cluster_20000_hierarchical_assignment)
+
 #Qatar has an own Cluster -  Bahrain Kuweit and Singapore as well, therefore we remove them from dataset 
 
 cluster_20000_h_filtered <- select(current_coronadata_filter_20000, 'location', 'gdp_per_capita', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections' )
@@ -748,7 +725,7 @@ dist_cluster_20000_filtered_h <- dist(cluster_20000_h_filtered_scaled[,1:6], met
 
 #Clustern
 cluster_20000_hierarchical_filtered <- hclust(dist_cluster_20000_filtered_h, method = "ward.D2")
-# Stashed changes
+
 
 #Plotten
 plot(cluster_20000_hierarchical_filtered, hang=-1, labels = cluster_20000_h_filtered$location, cex= 0.7)
@@ -756,7 +733,7 @@ rect.hclust(cluster_20000_hierarchical_filtered, k=4)
 abline( col = 'red')
 
 suppressPackageStartupMessages(library(dendextend))
-cluster_20000_hierarchical_dendro_obj <- as.dendrogram(cluster_20000_hierarchical)
+cluster_20000_hierarchical_dendro_obj <- as.dendrogram(cluster_20000_hierarchical_filtered)
 cluster_20000_hierarchical_dendro <- color_branches(cluster_20000_hierarchical_dendro_obj, h = 5, k=4, border = 4)
 plot(cluster_20000_hierarchical_dendro)
 
@@ -767,34 +744,39 @@ abline(col = 'red')
 
 View(cluster_20000_hierarchical_assignment_filtered)
 
-#Write Cluster in DataSet
-cluster_20000_hierarchical_assignment <- as.data.frame(cluster_20000_hierarchical_assignment)
-View(cluster_20000_hierarchical_assignment)
 
-cluster_20000_hierarchical_assignment_table <- rownames_to_column(cluster_20000_hierarchical_assignment, var = "location")
-View(cluster_20000_hierarchical_assignment_table)
+#Write Cluster in DataSet
+cluster_20000_hierarchical_assignment_filtered <- as.data.frame(cluster_20000_hierarchical_assignment_filtered)
+View(cluster_20000_hierarchical_assignment_filtered)
+
+cluster_20000_hierarchical_assignment_filtered_table <- rownames_to_column(cluster_20000_hierarchical_assignment_filtered, var = "location")
+View(cluster_20000_hierarchical_assignment_filtered_table)
 
 cluster_20000_h_joined <- current_coronadata_filter_20000 %>%
-  left_join(cluster_20000_hierarchical_assignment_table, c("location" = "location"))
+  left_join(cluster_20000_hierarchical_assignment_filtered_table, c("location" = "location"))
 
 View(cluster_20000_h_joined)
 
 
 #Create Table for each Cluster
 corona_cluster_h1  <- cluster_20000_h_joined
-corona_cluster_h1 <- filter(cluster_20000_h_joined, cluster_assignment2 == 1)
+corona_cluster_h1 <- filter(cluster_20000_h_joined, cluster_20000_hierarchical_assignment_filtered == 1)
 corona_cluster_h2 <- cluster_20000_h_joined
-corona_cluster_h2 <- filter(cluster_20000_h_joined, cluster_assignment2 == 2)
+corona_cluster_h2 <- filter(cluster_20000_h_joined, cluster_20000_hierarchical_assignment_filtered == 2)
 corona_cluster_h3 <- cluster_20000_h_joined
-corona_cluster_h3 <- filter(cluster_20000_h_joined, cluster_assignment2 == 3)
+corona_cluster_h3 <- filter(cluster_20000_h_joined, cluster_20000_hierarchical_assignment_filtered == 3)
 corona_cluster_h4 <- cluster_20000_h_joined
-corona_cluster_h4 <- filter(cluster_20000_h_joined, cluster_assignment2 == 4)
+corona_cluster_h4 <- filter(cluster_20000_h_joined, cluster_20000_hierarchical_assignment_filtered == 4)
+corona_cluster_statistical_outliers <- filter(cluster_20000_h_joined, cluster_20000_h_joined$location == "Bahrain" |  cluster_20000_h_joined$location == "Kuwait" | cluster_20000_h_joined$location == "Singapore" | cluster_20000_h_joined$location =="Qatar")
+
+  
+
 
 View(corona_cluster_h1)
 View(corona_cluster_h2)
 View(corona_cluster_h3)
 View(corona_cluster_h4)
-
+View(corona_cluster_statistical_outliers)
 #----------------</Hierarchical Clustering>-------------------------------------------------------------#
 
 
