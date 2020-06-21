@@ -13,13 +13,14 @@ library(lubridate) # -> For working with dates and time
 library(readxl) # -> reading xlsx files
 library(psych) # -> cluster analyse
 library(factoextra) # -> clustering algorithms & visualization
-library(dbscan)
+library(dbscan) # -> librarby for dbscan
 library(data.table)
-library(dplyr)
+library(dplyr) # -> visualization
 library(utils)
 
 rm(list=ls())
 options(scipen = 5)
+
 #----------------</prepare>---------------------------------------------------------------------#
 
 
@@ -307,7 +308,7 @@ km9 <- kmeans(cluster_km_coronadata, 9, iter.max = 25, nstart = 25)
 
 View(cluster_km_coronadata)
 
-#
+# get withinss to barplot variance
 wss <- c(sum(km2$withinss), sum(km3$withinss), sum(km4$withinss),
          + sum(km5$withinss), sum(km6$withinss), sum(km7$withinss), sum(km8$withinss), sum(km9$withinss))
 names(wss) <- 2:9
@@ -505,7 +506,6 @@ cluster_20000 <- scale(cluster_20000)
 
 cor(cluster_20000)
 
-
 km2 <- kmeans(cluster_20000, 2, iter.max = 25, nstart = 25)
 km3 <- kmeans(cluster_20000, 3, iter.max = 25, nstart = 25)
 km4 <- kmeans(cluster_20000, 4, iter.max = 25, nstart = 25)
@@ -593,75 +593,125 @@ fviz_cluster(km4, data = cluster_20000_bip)
 #Due to the hierarchical clustering results, we chose to select 4 clusters per analysis to be able to compare the results!
 
 
-#Create Cluster data seperated by cluster assignment
-
+#Create Cluster data 
+#get clusters from kmeans with 4 clusters
 km3$cluster
-cluster_assignment <- km3$cluster
+cluster_assignment <- km4$cluster
 cluster_assignment <- as.data.frame(cluster_assignment)
 
 cluster_assignment <- rownames_to_column(cluster_assignment, var = "location")
 
-
-current_corona_with_clusters <- current_coronadata_filter_20000 %>%
+#join current corona data with clusters to get seperate dataframes of each cluster
+current_corona_with_clusters_km <- current_coronadata_filter_20000 %>%
     left_join(cluster_assignment, c("location" = "location"))
 
 
-current_corona_with_clusters <- filter(current_corona_with_clusters, cluster_assignment != "NA")
-view(current_corona_with_clusters)
+current_corona_with_clusters_km <- filter(current_corona_with_clusters_km, cluster_assignment != "NA")
+view(current_corona_with_clusters_km)
 
-corona_cluster_1 <- current_corona_with_clusters
-corona_cluster_1 <- filter(current_corona_with_clusters, cluster_assignment == 1)
-corona_cluster_2 <- current_corona_with_clusters
-corona_cluster_2 <- filter(current_corona_with_clusters, cluster_assignment == 2)
-corona_cluster_3 <- current_corona_with_clusters
-corona_cluster_3 <- filter(current_corona_with_clusters, cluster_assignment == 3)
+#get dataframes of each km-cluster
+corona_cluster_1_km <- current_corona_with_clusters
+corona_cluster_1_km <- filter(current_corona_with_clusters, cluster_assignment == 1)
+corona_cluster_2_km <- current_corona_with_clusters
+corona_cluster_2_km <- filter(current_corona_with_clusters, cluster_assignment == 2)
+corona_cluster_3_km <- current_corona_with_clusters
+corona_cluster_3_km <- filter(current_corona_with_clusters, cluster_assignment == 3)
+corona_cluster_4_km <- current_corona_with_clusters
+corona_cluster_4_km <- filter(current_corona_with_clusters, cluster_assignment == 4 )
 
-view(corona_cluster_1)
-view(corona_cluster_2)
-view(corona_cluster_3)
 
 #--------</Clustering kmeans - Clustervariables 1 & 2 together + GDP per Capita>--------#
 
 
 
 
-
-#----------------<regression analysis based on clusters>-----------------------------------------#
-
-str(current_corona_with_clusters)
-
-
-
-
-
-
-
-#----------------</regression analysis based on clusters>----------------------------------------#
-
-
-
 #----------------<Clustering dbscan>-------------------------------------------------------------#
 
+#let's try a density based algorithm -> dbscan
 
-dbscan <- dbscan(cluster_20000, eps = 1, minPts = 2, weights = NULL)
+#try 2 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 2, weights = NULL, borderPoints = TRUE)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 3, weights = NULL)
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 2, weights = NULL , borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+#try 3 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+#try 4 minpts
+dbscan <- dbscan(cluster_20000, eps = 1, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL, borderPoints = TRUE)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
 
-dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 2, weights = NULL)
+#try 5minpts
+dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
 
-dbscan <- dbscan(cluster_20000, eps = 1.5, minPts = 5, weights = NULL)
+dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan
+fviz_cluster(dbscan, data = cluster_20000)
+
+dbscan <- dbscan(cluster_20000, eps = 1.5, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
 fviz_cluster(dbscan, data = cluster_20000)
 
 
+#any combination of epsilon and minpoints does not show a good result for our corona dataset
+#maybe its the wrong approach, because dbscan is good for filtering out noise
+#and our clustering target is to get a cluster for every country, except the outliers like qatar etc
+#thats why we don't continue working with the result of the dbscan clustering
 
 
 #----------------</Clustering dbscan>------------------------------------------------------------#
@@ -676,7 +726,6 @@ cluster_20000_h <- as.data.frame(cluster_20000_h)
 
 row.names(cluster_20000_h) <- cluster_20000_h$location
 cluster_20000_h$location <- NULL
-
 
 
 #Standardisieren
@@ -770,17 +819,97 @@ corona_cluster_h4 <- filter(cluster_20000_h_joined, cluster_20000_hierarchical_a
 corona_cluster_statistical_outliers <- filter(cluster_20000_h_joined, cluster_20000_h_joined$location == "Bahrain" |  cluster_20000_h_joined$location == "Kuwait" | cluster_20000_h_joined$location == "Singapore" | cluster_20000_h_joined$location =="Qatar")
 
   
-
-
 View(corona_cluster_h1)
 View(corona_cluster_h2)
 View(corona_cluster_h3)
 View(corona_cluster_h4)
 View(corona_cluster_statistical_outliers)
+
 #----------------</Hierarchical Clustering>-------------------------------------------------------------#
 
 
 
 
+
+#----------------<analyze clustering hclust vs kmeans>-----------------------------------------#
+
+
+cluster_comparison <- select(current_coronadata_filter_20000, 'location', 'total_cases_per_million', 'total_deaths_per_million', 'days_100_to_1000_infections', 'days_1000_to_10000_infections', 'days_10000_to_20000_infections', 'gdp_per_capita' )
+cluster_comparison <- as.data.frame(cluster_comparison)
+cluster_comparison<- filter(cluster_comparison, location != "Qatar" & location != "Kuwait" & location != "Singapore" & location != "Bahrain")
+
+
+cluster_comparison <- cluster_comparison %>%
+  left_join(cluster_assignment, c("location" = "location")) %>%
+  left_join(cluster_20000_hierarchical_assignment_filtered_table, c("location" = "location"))
+
+
+
+names(cluster_comparison)[names(cluster_comparison) == "cluster_assignment"] <- "cluster_assignment_kmeans"
+names(cluster_comparison)[names(cluster_comparison) == "cluster_20000_hierarchical_assignment_filtered"] <- "cluster_assignment_hclust"
+
+#analysis of clusters shows that the clusters of kmeans nearly equals the clusters of the hclust algorithm
+#exceptions are germany, peru and panama
+#adjust cluster assignment of hclust to simplify comparison
+
+#cluster 2 of kmeans nearly equals cluster 1 of hclust
+#cluster 4 of kmeans nearly equals cluster 2 of hclust
+#cluster 3 of kmeans nearly equals cluster 4 of hclust
+#cluster 1 of keamns nearly equals cluster 3 of hclust
+
+cluster_comparison$cluster_assignment_hclust <- as.character(cluster_comparison$cluster_assignment_hclust)
+
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "1"] <- "B"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "2"] <- "D"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "4"] <- "C"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "3"] <- "A"
+
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "A"] <- "1"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "B"] <- "2"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "C"] <- "3"
+cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignment_hclust == "D"] <- "4"
+
+view(cluster_comparison)
+
+#export cluster_assignment to compare clusters in Tableau
+write.csv(cluster_comparison, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/cluster_assignment.csv")
+
+
+
+#result of comparison is to continue working with clusters of kmeans
+#they show less variance in relation to the different characteristics
+
+
+#lets continue working with kmeans clusters 1-4
+#export to analyze clusters using tableau
+summary(corona_cluster_1_km)
+view(corona_cluster_1_km)
+write.csv(corona_cluster_1_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_1_km.csv")
+
+summary(corona_cluster_2_km)
+view(corona_cluster_2_km)
+write.csv(corona_cluster_2_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_2_km.csv")
+
+summary(corona_cluster_3_km)
+view(corona_cluster_3_km)
+write.csv(corona_cluster_3_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_3_km.csv")
+
+summary(corona_cluster_4_km)
+view(corona_cluster_4_km)
+write.csv(corona_cluster_4_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_4_km.csv")
+
+
+#----------------</analyze clustering hclust vs kmeans>-----------------------------------------#
+
+
+
+
+#----------------<regression analysis based on clusters>-----------------------------------------#
+
+str(current_corona_with_clusters)
+
+
+
+#----------------</regression analysis based on clusters>----------------------------------------#
 
 
