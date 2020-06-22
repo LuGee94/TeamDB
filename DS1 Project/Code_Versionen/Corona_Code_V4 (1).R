@@ -236,50 +236,68 @@ view(current_coronadata_filter_20000)
 #----------------</Transform and Calculate Corona Data>-----------------------------------------#
 
 
+#----------------<Regression analysis- number of deaths>----------------------------------------------#
+Corona_day50 <- filter(Running_CoronaData, day_from_100th_infection == 50 & total_cases > 3000)
+Corona_day75 <- filter(Running_CoronaData, day_from_100th_infection == 75 & total_cases > 5000)
+# -> Probieren: Filter auf aktuellsten Tag Fälle > 20k
+# Select variables for regression; Predictors prelimited due to exploratory analyisis and testing some regressions
+Coronaa_day50_Reg_death <- select(Corona_day50, location, total_cases_per_million, total_cases, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, life_expectancy, `Happiness score`, `Nurses/1000 2019`, `Physicians/1000 2019`, `HI-Dystopia (1.88) + residual`, `HI-Explained by: Freedom to make life choices`, `HI-Explained by: Generosity`, `HI-Explained by: Healthy life expectancy`, `HI-Explained by: Perceptions of corruption`, `HI-Explained by: Social support`)
+lin_reg_cases_mil_death <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = Corona_day50)
+lin_reg_cases_total_death <- lm (total_deaths ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = Corona_day50)
+summary(lin_reg_cases_mil_death) #-> Negatice Influence of diabetes prevalence & hospital beds, positive of median age
+summary(lin_reg_cases_total_death) #-> Strong positive inf. of nurses + Median Age, negative o. hospital beds
 
+#Try some interaction variables:
+lin_reg_cases_mil_int_death <- lm(total_deaths_per_million ~ gdp_per_capita*`Physicians/1000 2019` + population_density + hospital_beds_per_thousand + `Nurses/1000 2019`:hospital_beds_per_thousand, data= Corona_day50)
+summary(lin_reg_cases_mil_int_death) #-> No clear findings from interactions, even after testing several variables
 
-#----------------<Regression analysis- death rate>----------------------------------------------#
+# Day 75
+lin_reg_cases_mil_75_death <- lm (total_deaths_per_million ~ population_density + median_age + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019`, data = Corona_day75)
+summary(lin_reg_cases_mil_75_death)
+# -> Observing day 75 does not lead to additional insights
 
-corona_data_death_explanation <- current_coronadata_filter_10000
+#Testing only happiness index factors:
+lin_reg_cases_HI_only_death <- lm(total_deaths_per_million ~ `HI-Dystopia (1.88) + residual` + `HI-Explained by: Freedom to make life choices`+ `HI-Explained by: Generosity`+ `HI-Explained by: Healthy life expectancy` + `HI-Explained by: Perceptions of corruption` + `HI-Explained by: Social support` + `HI-Explained by: GDP per capita`, data = Corona_day50)
+summary(lin_reg_cases_HI_only_death)
 
-corona_data_death_explanation <- filter(corona_data_death_explanation, location != "Ukraine")
+#Current Date instead of day 75
+lin_reg_cases_mil_today_death <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = current_coronadata_filter_5000)
+summary(lin_reg_cases_mil_today_death) #-> Again strong negative influence of diabetes prevalence + hospital beds
 
-lin_reg_cov_deaths <- lm( cvd_death_rate ~ population_density + median_age + aged_65_older + diabetes_prevalence + hospital_beds_per_100k + Health_Expenditure_2018 + `Happiness score` + `Life-Expectancy 2019` + `Nurses/1000 2019` + `Physicians/1000 2019` , data = corona_data_death_explanation)
-summary(lin_reg_cov_deaths)
-
-cor(corona_data_death_explanation$median_age, corona_data_death_explanation$`Life-Expectancy 2019`)
-cor(corona_data_death_explanation$median_age, corona_data_death_explanation$aged_65_older)
-cor(corona_data_death_explanation$`Nurses/1000 2019`, corona_data_death_explanation$`Physicians/1000 2019`)
-cor(corona_data_death_explanation$Health_Expenditure_2018, corona_data_death_explanation$gdp_per_capita)
-
-lin_reg_cov_deaths_pm <- lm( cvd_death_rate ~ diabetes_prevalence + hospital_beds_per_100k + `Life-Expectancy 2019` + `Nurses/1000 2019` + `Physicians/1000 2019` , data = corona_data_death_explanation)
-summary(lin_reg_cov_deaths_pm)
-
-plot(`Life-Expectancy 2019`, cvd_death_rate)
-
-plot(Health_Expenditure_2018, cvd_death_rate)
-
-lin_reg_deaths_he <- lm ( cvd_death_rate ~ poly(Health_Expenditure_2018,4, raw = T) + poly(`Life-Expectancy 2019`,4, raw = T), data = corona_data_death_explanation)
-summary(lin_reg_deaths_he)
-
-
-#----------------<Regression analysis - death rate>---------------------------------------------#
-# Additional playing around with death rate regression
-lin_reg_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = Corona_day50)
-summary(lin_reg_deaths) #-> Interesting: Hospital beds per thousand, diabetes_prevalence
 plot(Corona_day50$hospital_beds_per_thousand, Corona_day50$total_deaths_per_million)
 plot(Corona_day50$diabetes_prevalence, Corona_day50$total_deaths_per_million)
 #----------------</Regression analysis - death rate>---------------------------------------------#
 
 
 
+
 #----------------<Regression analysis- infection rate>-------------------------------------------#
+Corona_day50 <- filter(Running_CoronaData, day_from_100th_infection == 50 & total_cases > 3000)
+Corona_day75 <- filter(Running_CoronaData, day_from_100th_infection == 75 & total_cases > 5000)
+# -> Probieren: Filter auf aktuellsten Tag Fälle > 20k
+# Select variables for regression
+Coronaa_day50_Reg <- select(Corona_day50, location, total_cases_per_million, total_cases, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, life_expectancy, `Happiness score`, `Nurses/1000 2019`, `Physicians/1000 2019`, `HI-Dystopia (1.88) + residual`, `HI-Explained by: Freedom to make life choices`, `HI-Explained by: Generosity`, `HI-Explained by: Healthy life expectancy`, `HI-Explained by: Perceptions of corruption`, `HI-Explained by: Social support`, median_age)
+lin_reg_cases_mil <- lm (total_cases_per_million ~ population_density + median_age + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = Corona_day50)
+lin_reg_cases_tot <- lm (total_cases ~ population_density + gdp_per_capita + median_age +life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = Corona_day50)
+summary(lin_reg_cases_mil)
+#-> Significant influence of GDP; Happiness Score, Physicians, diabetes, hospital beds, pop_density
+summary(lin_reg_cases_tot)  #Only nurses; probably observing total cases absolutely is not wothwhile
+#Try some interaction variables:
+lin_reg_cases_mil_int <- lm(total_cases_per_million ~ gdp_per_capita*`Physicians/1000 2019` + population_density + hospital_beds_per_thousand, data= Corona_day50)
+summary(lin_reg_cases_mil_int)
 
+# Day 75
+lin_reg_cases_mil_75 <- lm (total_cases_per_million ~ population_density + gdp_per_capita + median_age +life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019`, data = Corona_day75)
+summary(lin_reg_cases_mil_75)
+# -> Happiness Index significant
+#Testing only happiness index factors:
+lin_reg_cases_HI_only <- lm(total_cases_per_million ~ `HI-Dystopia (1.88) + residual` + `HI-Explained by: Freedom to make life choices`+ `HI-Explained by: Generosity`+ `HI-Explained by: Healthy life expectancy` + `HI-Explained by: Perceptions of corruption` + `HI-Explained by: Social support` + `HI-Explained by: GDP per capita`, data = Corona_day50)
+summary(lin_reg_cases_HI_only)
 
-
-
+#Current Date
+lin_reg_cases_mil_today <- lm (total_cases_per_million ~ population_density + gdp_per_capita + median_age +life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = current_coronadata_filter_5000)
+summary(lin_reg_cases_mil_today)
 #----------------</Regression analysis - infection rate>-----------------------------------------#
-
 
 
 #----------------<Clustering kmeans - cases and deaths per million>------------------------------#
