@@ -164,10 +164,9 @@ Running_CoronaData <- CoronaData_Joined %>%
 view(Running_CoronaData)
 
 #get max date corona dataset
-max_data_corona_dataset <- max(Running_CoronaData$date)
-
+max_data_corona_dataset <- filter(Running_CoronaData, Running_CoronaData$date =="2020-06-20")
 #filter data to the most actual date
-current_coronadata <- filter(Running_CoronaData, date == max_data_corona_dataset)
+current_coronadata <- max_data_corona_dataset
 
 #remove data <= 100 infections
 current_coronadata <- filter(current_coronadata, day_from_100th_infection != 0)
@@ -233,8 +232,9 @@ current_coronadata_filter_20000$'cases1000' <- NULL
 current_coronadata_filter_20000$'cases10000' <- NULL
 current_coronadata_filter_20000$'cases100000' <- NULL
 current_coronadata_filter_20000$cases20000 <- NULL
-#view(current_coronadata_filter_20000)
+view(current_coronadata_filter_20000)
 #----------------</Transform and Calculate Corona Data>-----------------------------------------#
+
 
 
 
@@ -610,15 +610,14 @@ current_corona_with_clusters_km <- filter(current_corona_with_clusters_km, clust
 view(current_corona_with_clusters_km)
 
 #get dataframes of each km-cluster
-corona_cluster_1_km <- current_corona_with_clusters
-corona_cluster_1_km <- filter(current_corona_with_clusters, cluster_assignment == 1)
-corona_cluster_2_km <- current_corona_with_clusters
-corona_cluster_2_km <- filter(current_corona_with_clusters, cluster_assignment == 2)
-corona_cluster_3_km <- current_corona_with_clusters
-corona_cluster_3_km <- filter(current_corona_with_clusters, cluster_assignment == 3)
-corona_cluster_4_km <- current_corona_with_clusters
-corona_cluster_4_km <- filter(current_corona_with_clusters, cluster_assignment == 4 )
-
+corona_cluster_1_km <- current_corona_with_clusters_km
+corona_cluster_1_km <- filter(current_corona_with_clusters_km, cluster_assignment == 1)
+corona_cluster_2_km <- current_corona_with_clusters_km
+corona_cluster_2_km <- filter(current_corona_with_clusters_km, cluster_assignment == 2)
+corona_cluster_3_km <- current_corona_with_clusters_km
+corona_cluster_3_km <- filter(current_corona_with_clusters_km, cluster_assignment == 3)
+corona_cluster_4_km <- current_corona_with_clusters_km
+corona_cluster_4_km <- filter(current_corona_with_clusters_km, cluster_assignment == 4 )
 
 #--------</Clustering kmeans - Clustervariables 1 & 2 together + GDP per Capita>--------#
 
