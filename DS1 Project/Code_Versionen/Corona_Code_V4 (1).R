@@ -924,7 +924,24 @@ write.csv(corona_cluster_4_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 
 
 str(current_corona_with_clusters)
 
+lin_reg_cluster_1_cases <- lm (total_cases_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_1_km)
+#> Regression not possible because N > p
 
+# Cluster 1 only 6 countries and can't be properly analyzed with a regression, we'll keep the regression to clusters 2-4
+lin_reg_cluster_2_cases <- lm (total_cases_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_2_km)
+lin_reg_cluster_2_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_2_km)
+summary(lin_reg_cluster_2_deaths) #-> Nothing significant
+summary(lin_reg_cluster_2_cases) #-> Strong negative influence of median_age + gdp; positive influence of nurses and life_expectancy
+
+lin_reg_cluster_3_cases <- lm (total_cases_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_3_km)
+lin_reg_cluster_3_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_3_km)
+summary(lin_reg_cluster_3_deaths) #-> Positive influence of life expectancy, negative of diabetes and hospital_beds
+summary(lin_reg_cluster_3_cases) #-> No clear influences
+
+lin_reg_cluster_4_cases <- lm (total_cases_per_million ~ population_density + gdp_per_capita + life_expectancy +  `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_4_km)
+lin_reg_cluster_4_deaths <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand + median_age, data = corona_cluster_4_km)
+summary(lin_reg_cluster_4_deaths) #-> Positive influence of life expectancy, negative of diabetes and hospital_beds
+summary(lin_reg_cluster_4_cases) #-> Not highly significant, but strong negative influence of median_age and Physicians
 
 #----------------</regression analysis based on clusters>----------------------------------------#
 
