@@ -791,6 +791,10 @@ dist_cluster_20000_filtered_h <- dist(cluster_20000_h_filtered_scaled[,1:6], met
 #Clustern
 cluster_20000_hierarchical_filtered <- hclust(dist_cluster_20000_filtered_h, method = "ward.D2")
 
+#Optimal amount of clusters
+fviz_nbclust(cluster_20000_h_filtered, FUN = hcut, method = "wss")
+#Diagram shows the elbow at 2 clusters, but there is still a significant reduction of variance till the 4th cluster
+
 
 #Plotten
 plot(cluster_20000_hierarchical_filtered, hang=-1, labels = cluster_20000_h_filtered$location, cex= 0.7)
