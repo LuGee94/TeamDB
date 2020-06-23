@@ -647,82 +647,81 @@ corona_cluster_4_km <- filter(current_corona_with_clusters_km, cluster_assignmen
 #let's try a density based algorithm -> dbscan
 
 #try 2 minpts
-dbscan <- dbscan(cluster_20000, eps = 1, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1, minPts = 2, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.1, minPts = 2, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.2, minPts = 2, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 2, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.3, minPts = 2, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 2, weights = NULL , borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.4, minPts = 2, weights = NULL , borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
 #try 3 minpts
-dbscan <- dbscan(cluster_20000, eps = 1, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1, minPts = 3, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.1, minPts = 3, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.2, minPts = 3, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 3, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.3, minPts = 3, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
 #try 4 minpts
-dbscan <- dbscan(cluster_20000, eps = 1, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1, minPts = 4, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.1, minPts = 4, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.2, minPts = 4, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 4, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.3, minPts = 4, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
 
 #try 5minpts
-dbscan <- dbscan(cluster_20000, eps = 1.1, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.1, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.2, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.2, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.3, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.3, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-
-dbscan <- dbscan(cluster_20000, eps = 1.4, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.4, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
-dbscan <- dbscan(cluster_20000, eps = 1.5, minPts = 5, weights = NULL, borderPoints = TRUE)
+dbscan <- dbscan(cluster_20000_bip, eps = 1.5, minPts = 5, weights = NULL, borderPoints = TRUE)
 dbscan
-fviz_cluster(dbscan, data = cluster_20000)
+fviz_cluster(dbscan, data = cluster_20000_bip)
 
 
 #any combination of epsilon and minpoints does not show a good result for our corona dataset
