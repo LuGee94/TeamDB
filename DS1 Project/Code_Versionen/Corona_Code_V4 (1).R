@@ -807,6 +807,7 @@ cluster_20000_hierarchical_dendro <- color_branches(cluster_20000_hierarchical_d
 plot(cluster_20000_hierarchical_dendro)
 
 
+
 #Table with assignments to cluster 
 cluster_20000_hierarchical_assignment_filtered <- cutree(cluster_20000_hierarchical_filtered, k = 4)
 abline(col = 'red')
@@ -845,72 +846,10 @@ View(corona_cluster_h3)
 View(corona_cluster_h4)
 View(corona_cluster_statistical_outliers)
 
-#Build the Means of cluster relevant variables h1
-mean(corona_cluster_h1$total_cases)
-mean(corona_cluster_h1$total_deaths)
-mean(corona_cluster_h1$total_cases_per_million)
-mean(corona_cluster_h1$total_deaths_per_million)
-mean(corona_cluster_h1$median_age)
-mean(corona_cluster_h1$gdp_per_capita)
-mean(corona_cluster_h1$hospital_beds_per_thousand)
-mean(corona_cluster_h1$life_expectancy)
-mean(corona_cluster_h1$`Physicians/1000 2019`)
-mean(corona_cluster_h1$`Nurses/1000 2019`)
-mean(corona_cluster_h1$Health_Expenditure_2018)
-mean(corona_cluster_h1$days_100_to_1000_infections)
-mean(corona_cluster_h1$days_1000_to_10000_infections)
-mean(corona_cluster_h1$days_10000_to_20000_infections)
-
-
-#Build the Means of cluster relevant variables h2
-mean(corona_cluster_h2$total_cases)
-mean(corona_cluster_h2$total_deaths)
-mean(corona_cluster_h2$total_cases_per_million)
-mean(corona_cluster_h2$total_deaths_per_million)
-mean(corona_cluster_h2$median_age)
-mean(corona_cluster_h2$gdp_per_capita)
-mean(corona_cluster_h2$hospital_beds_per_thousand)
-mean(corona_cluster_h2$life_expectancy)
-mean(corona_cluster_h2$`Physicians/1000 2019`)
-mean(corona_cluster_h2$`Nurses/1000 2019`)
-mean(corona_cluster_h2$Health_Expenditure_2018)
-mean(corona_cluster_h2$days_100_to_1000_infections)
-mean(corona_cluster_h2$days_1000_to_10000_infections)
-mean(corona_cluster_h2$days_10000_to_20000_infections)
-
-#Build the Means of cluster relevant variables h3
-mean(corona_cluster_h3$total_cases)
-mean(corona_cluster_h3$total_deaths)
-mean(corona_cluster_h3$total_cases_per_million)
-mean(corona_cluster_h3$total_deaths_per_million)
-mean(corona_cluster_h3$median_age)
-mean(corona_cluster_h3$gdp_per_capita)
-mean(corona_cluster_h3$hospital_beds_per_thousand)
-mean(corona_cluster_h3$life_expectancy)
-mean(corona_cluster_h3$`Physicians/1000 2019`)
-mean(corona_cluster_h3$`Nurses/1000 2019`)
-mean(corona_cluster_h3$Health_Expenditure_2018)
-mean(corona_cluster_h3$days_100_to_1000_infections)
-mean(corona_cluster_h3$days_1000_to_10000_infections)
-mean(corona_cluster_h3$days_10000_to_20000_infections)
-
-#Build the Means of cluster relevant variables h4
-mean(corona_cluster_h4$total_cases)
-mean(corona_cluster_h4$total_deaths)
-mean(corona_cluster_h4$total_cases_per_million)
-mean(corona_cluster_h4$total_deaths_per_million)
-mean(corona_cluster_h4$median_age)
-mean(corona_cluster_h4$gdp_per_capita)
-mean(corona_cluster_h4$hospital_beds_per_thousand)
-mean(corona_cluster_h4$life_expectancy)
-mean(corona_cluster_h4$`Physicians/1000 2019`)
-mean(corona_cluster_h4$`Nurses/1000 2019`)
-mean(corona_cluster_h4$Health_Expenditure_2018)
-mean(corona_cluster_h4$days_100_to_1000_infections)
-mean(corona_cluster_h4$days_1000_to_10000_infections)
-mean(corona_cluster_h4$days_10000_to_20000_infections)
 
 #----------------</Hierarchical Clustering>-------------------------------------------------------------#
+
+
 
 
 
@@ -982,6 +921,72 @@ write.csv(corona_cluster_3_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 
 summary(corona_cluster_4_km)
 view(corona_cluster_4_km)
 write.csv(corona_cluster_4_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_4_km.csv")
+
+
+#Build the Means of cluster relevant variables h1
+mean(corona_cluster_h1$total_cases)
+mean(corona_cluster_h1$total_deaths)
+mean(corona_cluster_h1$total_cases_per_million)
+mean(corona_cluster_h1$total_deaths_per_million)
+mean(corona_cluster_h1$median_age)
+mean(corona_cluster_h1$gdp_per_capita)
+mean(corona_cluster_h1$hospital_beds_per_thousand)
+mean(corona_cluster_h1$life_expectancy)
+mean(corona_cluster_h1$`Physicians/1000 2019`)
+mean(corona_cluster_h1$`Nurses/1000 2019`)
+mean(corona_cluster_h1$Health_Expenditure_2018)
+mean(corona_cluster_h1$days_100_to_1000_infections)
+mean(corona_cluster_h1$days_1000_to_10000_infections)
+mean(corona_cluster_h1$days_10000_to_20000_infections)
+
+
+#Build the Means of cluster relevant variables h2
+mean(corona_cluster_h2$total_cases)
+mean(corona_cluster_h2$total_deaths)
+mean(corona_cluster_h2$total_cases_per_million)
+mean(corona_cluster_h2$total_deaths_per_million)
+mean(corona_cluster_h2$median_age)
+mean(corona_cluster_h2$gdp_per_capita)
+mean(corona_cluster_h2$hospital_beds_per_thousand)
+mean(corona_cluster_h2$life_expectancy)
+mean(corona_cluster_h2$`Physicians/1000 2019`)
+mean(corona_cluster_h2$`Nurses/1000 2019`)
+mean(corona_cluster_h2$Health_Expenditure_2018)
+mean(corona_cluster_h2$days_100_to_1000_infections)
+mean(corona_cluster_h2$days_1000_to_10000_infections)
+mean(corona_cluster_h2$days_10000_to_20000_infections)
+
+#Build the Means of cluster relevant variables h3
+mean(corona_cluster_h3$total_cases)
+mean(corona_cluster_h3$total_deaths)
+mean(corona_cluster_h3$total_cases_per_million)
+mean(corona_cluster_h3$total_deaths_per_million)
+mean(corona_cluster_h3$median_age)
+mean(corona_cluster_h3$gdp_per_capita)
+mean(corona_cluster_h3$hospital_beds_per_thousand)
+mean(corona_cluster_h3$life_expectancy)
+mean(corona_cluster_h3$`Physicians/1000 2019`)
+mean(corona_cluster_h3$`Nurses/1000 2019`)
+mean(corona_cluster_h3$Health_Expenditure_2018)
+mean(corona_cluster_h3$days_100_to_1000_infections)
+mean(corona_cluster_h3$days_1000_to_10000_infections)
+mean(corona_cluster_h3$days_10000_to_20000_infections)
+
+#Build the Means of cluster relevant variables h4
+mean(corona_cluster_h4$total_cases)
+mean(corona_cluster_h4$total_deaths)
+mean(corona_cluster_h4$total_cases_per_million)
+mean(corona_cluster_h4$total_deaths_per_million)
+mean(corona_cluster_h4$median_age)
+mean(corona_cluster_h4$gdp_per_capita)
+mean(corona_cluster_h4$hospital_beds_per_thousand)
+mean(corona_cluster_h4$life_expectancy)
+mean(corona_cluster_h4$`Physicians/1000 2019`)
+mean(corona_cluster_h4$`Nurses/1000 2019`)
+mean(corona_cluster_h4$Health_Expenditure_2018)
+mean(corona_cluster_h4$days_100_to_1000_infections)
+mean(corona_cluster_h4$days_1000_to_10000_infections)
+mean(corona_cluster_h4$days_10000_to_20000_infections)
 
 
 #----------------</analyze clustering hclust vs kmeans>-----------------------------------------#
