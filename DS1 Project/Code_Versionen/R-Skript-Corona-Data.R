@@ -896,7 +896,7 @@ cluster_comparison$cluster_assignment_hclust[cluster_comparison$cluster_assignme
 view(cluster_comparison)
 
 #export cluster_assignment to compare clusters in Tableau
-write.csv(cluster_comparison, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/cluster_assignment.csv")
+#write.csv(cluster_comparison, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/cluster_assignment.csv")
 
 
 
@@ -908,19 +908,19 @@ write.csv(cluster_comparison, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 P
 #export to analyze clusters using tableau
 summary(corona_cluster_1_km)
 view(corona_cluster_1_km)
-write.csv(corona_cluster_1_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_1_km.csv")
+#write.csv(corona_cluster_1_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_1_km.csv")
 
 summary(corona_cluster_2_km)
 view(corona_cluster_2_km)
-write.csv(corona_cluster_2_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_2_km.csv")
+#write.csv(corona_cluster_2_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_2_km.csv")
 
 summary(corona_cluster_3_km)
 view(corona_cluster_3_km)
-write.csv(corona_cluster_3_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_3_km.csv")
+#write.csv(corona_cluster_3_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_3_km.csv")
 
 summary(corona_cluster_4_km)
 view(corona_cluster_4_km)
-write.csv(corona_cluster_4_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_4_km.csv")
+#write.csv(corona_cluster_4_km, "/Users/niklaswagner/Documents/GitHub/TeamDB/DS1 Project/corona_cluster_4_km.csv")
 
 
 #Build the Means of cluster relevant variables h1
