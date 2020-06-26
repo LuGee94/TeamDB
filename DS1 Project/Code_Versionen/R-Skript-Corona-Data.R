@@ -261,7 +261,7 @@ lin_reg_cases_HI_only_death <- lm(total_deaths_per_million ~ `HI-Dystopia (1.88)
 summary(lin_reg_cases_HI_only_death)
 
 #Current Date instead of day 75
-lin_reg_cases_mil_today_death <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = current_coronadata_filter_5000)
+lin_reg_cases_mil_today_death <- lm (total_deaths_per_million ~ population_density + gdp_per_capita + life_expectancy + `Happiness score` + `Nurses/1000 2019` + `Physicians/1000 2019` + diabetes_prevalence + hospital_beds_per_thousand, data = current_coronadata_filter_20000)
 summary(lin_reg_cases_mil_today_death) #-> Again strong negative influence of diabetes prevalence + hospital beds
 
 plot(Corona_day50$hospital_beds_per_thousand, Corona_day50$total_deaths_per_million)
